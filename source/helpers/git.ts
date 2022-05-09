@@ -6,13 +6,12 @@ import {
   GIT_FILTER_SCRIPT_FULLPATH,
   GIT_FILTER_SCRIPT_CONTENTS,
   GIT_FILTER_NAME,
-  WORKING_DIR,
 } from './constants';
 
-const GITATTRIBUTES_FILE = `${WORKING_DIR}/.gitattributes`;
+const GITATTRIBUTES_FILE = '.gitattributes';
 
 export const checkForGitRepo = (): string | undefined => {
-  const isGitRepository = fs.existsSync(`${WORKING_DIR}/.git`);
+  const isGitRepository = fs.existsSync('.git');
   if (!isGitRepository) {
     return "This directory doesn't seem to be a git repository (couldn't find .git)";
   }

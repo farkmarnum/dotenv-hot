@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Newline, Text } from 'ink';
 import SelectInput, { ItemProps } from 'ink-select-input';
 
-import { GIT_FILTER_SCRIPT_RELATIVE_PATH } from '../../helpers/constants';
+import { GIT_FILTER_SCRIPT_FULLPATH } from '../../helpers/constants';
 
 const ItemComponent = ({ isSelected, label }: ItemProps) => (
   <Text color={isSelected ? 'cyanBright' : 'white'} bold={isSelected}>
@@ -33,7 +33,7 @@ const InitialConfirmation = ({
         <Newline />
         This tool will generate the following files:
         <Newline />· A script for use by git:{' '}
-        <Text color="yellowBright">{GIT_FILTER_SCRIPT_RELATIVE_PATH}</Text>
+        <Text color="yellowBright">{GIT_FILTER_SCRIPT_FULLPATH}</Text>
         <Newline />· A <Text color="yellowBright">env.ts</Text> or{' '}
         <Text color="yellowBright">env.js</Text> file in the directory of your
         choosing
