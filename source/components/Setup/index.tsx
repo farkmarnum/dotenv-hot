@@ -62,12 +62,18 @@ interface StepStatus {
 
 const Setup = ({
   envModuleDirFromFlag,
+  shouldSkipConfirmations,
 }: {
-  envModuleDirFromFlag: string | undefined;
+  envModuleDirFromFlag?: string;
+  shouldSkipConfirmations?: boolean;
 }) => {
   const { exit } = useApp();
 
-  const [step, setStep] = useState<Step>('initial-confirmation');
+  const initialStep = shouldSkipConfirmations
+    ? 'git-repo-check'
+    : 'initial-confirmation';
+
+  const [step, setStep] = useState<Step>(initialStep);
   const [stepsComplete, setStepsCompleted] = useState<StepStatus[]>([]);
 
   const markStepSucceeded = (s: Step) =>

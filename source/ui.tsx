@@ -5,9 +5,10 @@ import Watch from './components/Watch';
 import { COMMANDS, PACKAGE_NAME } from './helpers/constants';
 
 const App: React.FC<{
-  command: string | undefined;
-  envModuleDir: string | undefined;
-}> = ({ command, envModuleDir }) => {
+  command?: string;
+  envModuleDir?: string;
+  shouldSkipConfirmations?: boolean;
+}> = ({ command, envModuleDir, shouldSkipConfirmations }) => {
   const { exit } = useApp();
 
   useEffect(() => {
@@ -24,7 +25,12 @@ const App: React.FC<{
 
   return (
     <Box>
-      {command === 'setup' && <Setup envModuleDirFromFlag={envModuleDir} />}
+      {command === 'setup' && (
+        <Setup
+          envModuleDirFromFlag={envModuleDir}
+          shouldSkipConfirmations={shouldSkipConfirmations}
+        />
+      )}
       {command === 'watch' && <Watch />}
     </Box>
   );
