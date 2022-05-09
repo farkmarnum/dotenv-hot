@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { Box, Text } from 'ink';
-import TextInput from 'ink-text-input';
+// import fs from 'fs';
 
-const SearchQuery = () => {
-  const [query, setQuery] = useState('');
-  console.log(query);
+import React, { useEffect } from 'react';
+import { Box, Text } from 'ink';
+import Spinner from 'ink-spinner';
+
+const Watch = () => {
+  useEffect(() => {
+    // fs.watch()
+  }, []);
 
   return (
-    <Box>
-      <Box marginRight={1}>
-        <Text>Enter your query:</Text>
-      </Box>
-
-      <TextInput value={query} onChange={setQuery} />
+    <Box marginTop={1}>
+      <Text>
+        Watching <Text color="yellowBright">.env</Text> for changes
+      </Text>
+      <Spinner type="monkey" />
     </Box>
   );
 };
 
-const Setup = () => <SearchQuery />;
-
-export default Setup;
+export default Watch;
