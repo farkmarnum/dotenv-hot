@@ -12,6 +12,7 @@ import {
 export const createGitFilterScript = () => {
   fs.mkdirSync(GIT_FILTER_SCRIPT_DIR, { recursive: true });
   fs.writeFileSync(GIT_FILTER_SCRIPT_FULLPATH, GIT_FILTER_SCRIPT_CONTENTS);
+  fs.chmodSync(GIT_FILTER_SCRIPT_FULLPATH, '755');
 };
 
 const GITATTRIBUTES_FILE = `${WORKING_DIR}/.gitattributes`;
