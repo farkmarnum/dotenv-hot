@@ -14,9 +14,10 @@
     "hmr"
   ],
   "bin": "dist/source/cli.js",
-  "files": [
-    "dist/source/cli.js"
-  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farkmarnum/dotenv-hot"
+  },
   "scripts": {
     "build": "tsc && chmod u+x dist/source/cli.js",
     "build:watch": "yarn build && tsc --watch",
