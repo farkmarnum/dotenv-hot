@@ -18,7 +18,7 @@ const ensureThatSetupHasHappened = ({ exit }: { exit: () => void }) => {
     (filename) => {
       if (!fs.existsSync(filename)) {
         console.error(
-          `ERROR: could not find ${ENV_FILENAME}. Have you run \`npx ${PACKAGE_NAME} setup\` yet?`,
+          `ERROR: could not find ${filename} -- have you run \`npx ${PACKAGE_NAME} setup\` yet?`,
         );
         exit();
       }
