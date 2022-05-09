@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Newline, Text } from 'ink';
 import Spinner from 'ink-spinner';
 import chalk from 'chalk';
+import stripComments from 'strip-comments';
 import {
   ENV_FILENAME,
   ENV_FROM_FILE_COMMENT,
@@ -100,10 +101,11 @@ const warnIfMissing = ({
   envModuleFullpath: string;
 }) => {
   const envModuleContents = fs.readFileSync(envModuleFullpath, 'utf-8');
+  const envModuleNoComments = stripComments(envModuleContents);
 
   setWarnings(
     Object.keys(parsedEnv).reduce((acc, name) => {
-      if (!envModuleContents.includes(`export const ${name}`)) {
+      if (!envModuleNoComments.includes(`export const ${name}`)) {
         acc.push(
           <Text>
             <Text color="yellowBright">{envModuleFullpath}</Text> does not
