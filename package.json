@@ -1,33 +1,44 @@
 {
   "name": "dotenv-hot",
   "version": "0.1.0",
-  "author": "Mark Farnum",
   "description": "Dotenv that works with hot reloading",
+  "license": "MIT",
+  "engines": {
+    "node": ">=10"
+  },
+  "author": "Mark Farnum",
   "keywords": [
     "dotenv",
     "hot",
     "hot-reloading",
     "hmr"
   ],
-  "license": "MIT",
   "bin": "dist/source/cli.js",
-  "engines": {
-    "node": ">=10"
-  },
-  "scripts": {
-    "build": "tsc && chmod u+x dist/source/cli.js",
-    "build:watch": "yarn build && tsc --watch",
-    "pretest": "npm run build",
-    "start": "npm run build && dist/source/cli.js",
-    "test": "ava",
-    "clean": "rm -rf dist",
-    "lint": "eslint .",
-    "prepublishOnly": "yarn lint && yarn test && yarn clean && yarn build",
-    "x": "dist/source/cli.js"
-  },
   "files": [
     "dist/source/cli.js"
   ],
+  "scripts": {
+    "build": "tsc && chmod u+x dist/source/cli.js",
+    "build:watch": "yarn build && tsc --watch",
+    "clean": "rm -rf dist",
+    "lint": "eslint .",
+    "prepublishOnly": "yarn lint && yarn test && yarn clean && yarn build",
+    "start": "npm run build && dist/source/cli.js",
+    "pretest": "npm run build",
+    "test": "ava",
+    "x": "dist/source/cli.js"
+  },
+  "ava": {
+    "typescript": {
+      "extensions": [
+        "tsx"
+      ],
+      "rewritePaths": {
+        "source/": "dist/source/"
+      },
+      "compile": false
+    }
+  },
   "dependencies": {
     "chalk": "^4.1.2",
     "ink": "^3.2.0",
@@ -59,16 +70,5 @@
     "ink-testing-library": "^2.1.0",
     "prettier": "^2.6.2",
     "typescript": "^4.6.4"
-  },
-  "ava": {
-    "typescript": {
-      "extensions": [
-        "tsx"
-      ],
-      "rewritePaths": {
-        "source/": "dist/source/"
-      },
-      "compile": false
-    }
   }
 }
