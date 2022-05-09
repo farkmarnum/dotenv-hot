@@ -4,9 +4,10 @@ import Setup from './components/Setup';
 import Watch from './components/Watch';
 import { COMMANDS, PACKAGE_NAME } from './helpers/constants';
 
-const App: React.FC<{ args: string[] }> = ({ args }) => {
-  const [command] = args;
-
+const App: React.FC<{
+  command: string | undefined;
+  envModuleDir: string | undefined;
+}> = ({ command, envModuleDir }) => {
   const { exit } = useApp();
 
   useEffect(() => {
@@ -23,7 +24,7 @@ const App: React.FC<{ args: string[] }> = ({ args }) => {
 
   return (
     <Box>
-      {command === 'setup' && <Setup />}
+      {command === 'setup' && <Setup envModuleDirFromFlag={envModuleDir} />}
       {command === 'watch' && <Watch />}
     </Box>
   );

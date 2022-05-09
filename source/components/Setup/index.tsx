@@ -60,7 +60,11 @@ interface StepStatus {
   status: 'succeeded' | 'failed';
 }
 
-const Setup = () => {
+const Setup = ({
+  envModuleDirFromFlag,
+}: {
+  envModuleDirFromFlag: string | undefined;
+}) => {
   const { exit } = useApp();
 
   const [step, setStep] = useState<Step>('initial-confirmation');
@@ -80,6 +84,12 @@ const Setup = () => {
   const envModuleFullpath = envModuleDir
     ? `${envModuleDir}/${ENV_MODULE_FILENAME}`
     : undefined;
+
+  useEffect(() => {
+    if (envModuleDirFromFlag) {
+      setEnvModuleDir(envModuleDirFromFlag);
+    }
+  }, []);
 
   // HANDLE STEP CHANGE:
   useEffect(() => {
@@ -110,7 +120,12 @@ const Setup = () => {
           markStepFailed(step);
         } else {
           markStepSucceeded(step);
-          nextStep = 'env-module-prompt';
+          if (envModuleDirFromFlag) {
+            // Don't prompt for env module dir, since we got it from flags:
+            nextStep = 'env-module-check';
+          } else {
+            nextStep = 'env-module-prompt';
+          }
         }
         break;
 
