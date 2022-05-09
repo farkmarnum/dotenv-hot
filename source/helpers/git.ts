@@ -20,7 +20,7 @@ export const checkForGitRepo = (): string | undefined => {
 export const checkForCleanWorkingTree = (): string | undefined => {
   const output = execSync('git status --porcelain', { encoding: 'utf-8' });
   if (output.length > 0) {
-    return "Git working tree must be clean before 'setup' can be run. Please commit or stash your changes.";
+    return `Git working tree must be clean before 'setup' can be run. Please commit or stash your changes. The current working tree:\n${output}`;
   }
   return undefined;
 };
