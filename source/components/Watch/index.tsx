@@ -1,8 +1,8 @@
 import fs from 'fs';
-
-import React, { useEffect } from 'react';
-import { Box, Text, useApp } from 'ink';
+import React, { useState, useEffect } from 'react';
+import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
+import chalk from 'chalk';
 import {
   ENV_FILENAME,
   ENV_MODULE_COMMENT,
@@ -13,14 +13,18 @@ import {
 } from '../../helpers/constants';
 import { getGitConfigConfig } from '../../helpers/git';
 
-const ensureThatSetupHasHappened = ({ exit }: { exit: () => void }) => {
+const ensureThatSetupHasHappened = () => {
   [GITATTRIBUTES_FILE, GIT_FILTER_SCRIPT_FULLPATH, ENV_FILENAME].forEach(
     (filename) => {
       if (!fs.existsSync(filename)) {
         console.error(
-          `ERROR: could not find ${filename} -- have you run \`npx ${PACKAGE_NAME} setup\` yet?`,
+          `ERROR: could not find ${chalk.yellow(
+            filename,
+          )} -- have you run ${chalk.cyanBright(
+            `npx ${PACKAGE_NAME} setup`,
+          )} yet?`,
         );
-        exit();
+        process.exit(1);
       }
     },
   );
@@ -34,7 +38,7 @@ const ensureThatSetupHasHappened = ({ exit }: { exit: () => void }) => {
     console.error(
       `ERROR: git config doesn't have the filter enabled. Have you run \`npx ${PACKAGE_NAME} setup\` yet?`,
     );
-    exit();
+    process.exit(1);
   }
 };
 
@@ -93,10 +97,10 @@ ${newEnvContent}
 };
 
 const Watch = () => {
-  const { exit } = useApp();
+  const [isWatching, setIsWatching] = useState(false);
 
   useEffect(() => {
-    ensureThatSetupHasHappened({ exit });
+    ensureThatSetupHasHappened();
 
     const envModulePath = getEnvModulePathFromGitattributes();
     const updateEnvModule = updateEnvModuleFactory(envModulePath);
@@ -104,21 +108,27 @@ const Watch = () => {
     const watcher = fs.watchFile(ENV_FILENAME, updateEnvModule);
     updateEnvModule();
 
+    setIsWatching(true);
+
     return () => {
       watcher.unref();
     };
-  }, [exit]);
+  }, []);
 
   return (
     <Box marginTop={1}>
-      <Text color="cyanBright">
-        <Spinner />
-      </Text>
-      <Box marginLeft={1}>
-        <Text>
-          Watching <Text color="yellowBright">.env</Text> for changes...
-        </Text>
-      </Box>
+      {isWatching && (
+        <>
+          <Text color="cyanBright">
+            <Spinner />
+          </Text>
+          <Box marginLeft={1}>
+            <Text>
+              Watching <Text color="yellowBright">.env</Text> for changes...
+            </Text>
+          </Box>
+        </>
+      )}
     </Box>
   );
 };
