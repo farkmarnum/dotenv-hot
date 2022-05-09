@@ -1,10 +1,17 @@
-// import fs from 'fs';
 import React, { useEffect, useState } from 'react';
-import { Box, Text, Static, Newline } from 'ink';
+import { Box, Text, Static, Newline, useApp } from 'ink';
 import TextInput from 'ink-text-input';
+
+import InitialConfirmation from '../InitialConfirmation';
 import { guardGit, guardEnvModule } from '../../helpers/guards';
 import { isTypescript } from '../../helpers/util';
 import { writeEnvModuleInit } from '../../helpers/envModule';
+import {
+  createGitFilterScript,
+  writeGitattributes,
+  enableGitFilter,
+} from '../../helpers/git';
+import { GIT_FILTER_SCRIPT_FULLPATH } from '../../helpers/constants';
 
 const envModuleFilename = `env.${isTypescript() ? 'ts' : 'js'}`;
 
@@ -29,11 +36,16 @@ const Input = ({ setValue }: { setValue: (s: string) => void }) => {
 };
 
 const steps = [
+  'initial-confirmation',
   'git-check',
   'env-module-prompt',
   'env-module-check',
   'env-module-create',
+  'git-filter-script-create',
+  'write-gitattributes',
+  'git-filter-enable',
 ] as const;
+
 type Step = typeof steps[number];
 
 interface StepStatus {
@@ -42,7 +54,9 @@ interface StepStatus {
 }
 
 const Setup = () => {
-  const [step, setStep] = useState<Step>(steps[0]);
+  const { exit } = useApp();
+
+  const [step, setStep] = useState<Step>('initial-confirmation');
   const [stepsComplete, setStepsCompleted] = useState<StepStatus[]>([]);
 
   const markStepSucceeded = (s: Step) =>
@@ -86,6 +100,7 @@ const Setup = () => {
         markStepFailed(step);
       } else {
         markStepSucceeded(step);
+        nextStep = 'env-module-create';
       }
     }
 
@@ -93,6 +108,26 @@ const Setup = () => {
       if (!envModuleFullpath) throw new Error('no envModuleFullpath');
 
       writeEnvModuleInit(envModuleFullpath);
+      markStepSucceeded(step);
+      nextStep = 'git-filter-script-create';
+    }
+
+    if (step === 'git-filter-script-create') {
+      createGitFilterScript();
+      markStepSucceeded(step);
+      nextStep = 'write-gitattributes';
+    }
+
+    if (step === 'write-gitattributes') {
+      if (!envModuleFullpath) throw new Error('no envModuleFullpath');
+
+      writeGitattributes(envModuleFullpath);
+      markStepSucceeded(step);
+      nextStep = 'git-filter-enable';
+    }
+
+    if (step === 'git-filter-enable') {
+      enableGitFilter();
       markStepSucceeded(step);
     }
 
@@ -112,6 +147,21 @@ const Setup = () => {
     }
   }, [input, step]);
 
+  const handleInitialConfirmation = (didConfirm: boolean) => {
+    if (step !== 'initial-confirmation') {
+      throw new Error(
+        'handleInitialConfirmation was called during the wrong step',
+      );
+    }
+
+    if (didConfirm) {
+      markStepSucceeded(step);
+      setStep('git-check');
+    } else {
+      exit();
+    }
+  };
+
   return (
     <Box>
       {/* LOGS: */}
@@ -122,20 +172,34 @@ const Setup = () => {
           return (
             <Box key={completedStep.step}>
               {completedStep.step === 'git-check' && (
-                <Text>· Making sure this is a git repository {status}</Text>
+                <Text>· {status} Making sure this is a git repository</Text>
               )}
 
               {completedStep.step === 'env-module-check' && (
                 <Text>
-                  · Making sure there isn&apos;t already an env.ts file in{' '}
-                  {envModuleDir} {status}
+                  · {status} Making sure there isn&apos;t already an env.ts file
+                  in {envModuleDir}
                 </Text>
               )}
 
               {completedStep.step === 'env-module-create' && (
                 <Text>
-                  · Initializing {envModuleFullpath} {status}
+                  · {status} Initializing {envModuleFullpath}
                 </Text>
+              )}
+
+              {completedStep.step === 'git-filter-script-create' && (
+                <Text>
+                  · {status} Adding {GIT_FILTER_SCRIPT_FULLPATH}
+                </Text>
+              )}
+
+              {completedStep.step === 'write-gitattributes' && (
+                <Text>· {status} Writing to .gitattributes</Text>
+              )}
+
+              {completedStep.step === 'git-filter-enable' && (
+                <Text>· {status} Enabling the new git filter</Text>
               )}
             </Box>
           );
@@ -145,6 +209,9 @@ const Setup = () => {
       {/* INTERACTIVE: */}
       <Box marginTop={1}>
         {step === 'env-module-prompt' && <Input setValue={setInput} />}
+        {step === 'initial-confirmation' && (
+          <InitialConfirmation confirm={handleInitialConfirmation} />
+        )}
       </Box>
 
       {errorMessage && (

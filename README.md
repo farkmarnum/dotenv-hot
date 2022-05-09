@@ -10,6 +10,9 @@ npm install --global dotenv-hot
 ```
 
 ## TODO
-1. Add git filter
-2. convert .env to a env.ts
+- setup
+  - need to ensure clean git tree before running
+  - need to stage changes
+- watch
+  - all...
 
