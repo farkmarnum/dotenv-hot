@@ -4,27 +4,14 @@ import { render } from 'ink';
 import meow from 'meow';
 import App from './ui';
 import { PACKAGE_NAME } from './helpers/constants';
-// import { runInitialGuards } from './helpers/guards';
 
-const cli = meow(
-  `
-  Usage
-    $ ${PACKAGE_NAME} <command>
+const cli = meow(`
+Usage
+  $ ${PACKAGE_NAME} [<command>]
 
-  Commands
-    setup  Initial setup
+Commands
+  setup - Initial setup: create env.[js|ts], add gitattributes filter, etc.
+  watch - Watch .env for changes and update env.[js|ts] accordingly.
+`);
 
-  Examples
-    $ ${PACKAGE_NAME} setup
-`,
-  {
-    flags: {
-      name: {
-        type: 'string',
-      },
-    },
-  },
-);
-
-render(<App />);
-render(<App name={cli.flags.name} />);
+render(<App args={cli.input} />);

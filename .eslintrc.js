@@ -16,6 +16,7 @@ module.exports = {
     'import/prefer-default-export': 'off', // Annoying
     'react/function-component-definition': 'off', // Annoying
     'react/require-default-props': 'off', // Not needed w/ TypeScript
+    'react/react-in-jsx-scope': 'off', // Not needed in React v18
 
     /**
      * Don't warn about imported dependencies being in devDependencies for test files:

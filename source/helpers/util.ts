@@ -1,6 +1,5 @@
 import fs from 'fs';
 import chalk from 'chalk';
-
 import { WORKING_DIR } from './constants';
 
 export const quit = (msg: string) => {
