@@ -10,11 +10,12 @@ import {
 } from './constants';
 
 export const checkForGitRepo = (): string | undefined => {
-  const isGitRepository = fs.existsSync('.git');
-  if (!isGitRepository) {
-    return "This directory doesn't seem to be a git repository (couldn't find .git)";
+  try {
+    execSync('git status');
+    return undefined;
+  } catch {
+    return "This directory doesn't seem to be a git repository.";
   }
-  return undefined;
 };
 
 export const checkForCleanWorkingTree = (): string | undefined => {

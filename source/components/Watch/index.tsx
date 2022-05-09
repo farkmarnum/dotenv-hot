@@ -46,7 +46,7 @@ const getEnvModulePathFromGitattributes = () => {
   const gitattributes = fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8');
   const match = gitattributes.match(/^(?<envModulePath>.*env\.[jt]s) filter=/m);
 
-  if (!match || !match.groups || !match.groups['envModulePath']) {
+  if (!match || !match.groups || !match.groups.envModulePath) {
     console.error(
       `ERROR: could not find env.ts or env.js referenced in ${GITATTRIBUTES_FILE}`,
     );
