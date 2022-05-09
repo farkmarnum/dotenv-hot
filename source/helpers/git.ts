@@ -35,18 +35,15 @@ export const createGitFilterScript = () => {
 export const writeGitattributes = (envFromFileFullpath: string) => {
   let contents = '';
   if (fs.existsSync(GITATTRIBUTES_FILE)) {
-    contents = `${fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8')}\n`;
+    contents = `${fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8')}`;
   }
 
   const addition = `${envFromFileFullpath} filter=${GIT_FILTER_NAME}`;
 
   // If this line isn't in .gitattributes yet, add it:
   if (!contents.includes(addition)) {
-    contents += addition;
-    contents += '\n';
+    fs.writeFileSync(GITATTRIBUTES_FILE, `${contents}\n${addition}\n`);
   }
-
-  fs.writeFileSync(GITATTRIBUTES_FILE, contents);
 };
 
 // Add this filter to .git/config:
