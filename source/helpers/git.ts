@@ -11,7 +11,7 @@ import {
 
 export const checkForGitRepo = (): string | undefined => {
   try {
-    execSync('git status');
+    execSync('git status'); // Throws error if no git repo
     return undefined;
   } catch {
     return "This directory doesn't seem to be a git repository.";
@@ -32,13 +32,13 @@ export const createGitFilterScript = () => {
   fs.chmodSync(GIT_FILTER_SCRIPT_FULLPATH, '755');
 };
 
-export const writeGitattributes = (envModuleDir: string) => {
+export const writeGitattributes = (envFromFileFullpath: string) => {
   let contents = '';
   if (fs.existsSync(GITATTRIBUTES_FILE)) {
     contents = `${fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8')}\n`;
   }
 
-  const addition = `${envModuleDir} filter=${GIT_FILTER_NAME}`;
+  const addition = `${envFromFileFullpath} filter=${GIT_FILTER_NAME}`;
 
   // If this line isn't in .gitattributes yet, add it:
   if (!contents.includes(addition)) {

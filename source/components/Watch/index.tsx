@@ -1,15 +1,17 @@
 import fs from 'fs';
 import React, { useState, useEffect } from 'react';
-import { Box, Text } from 'ink';
+import { Box, Newline, Text } from 'ink';
 import Spinner from 'ink-spinner';
 import chalk from 'chalk';
 import {
   ENV_FILENAME,
-  ENV_MODULE_COMMENT,
+  ENV_FROM_FILE_COMMENT,
+  ENV_FROM_FILE_FILENAME,
   GITATTRIBUTES_FILE,
   GIT_FILTER_SCRIPT_FULLPATH,
   GIT_FILTER_NAME,
   PACKAGE_NAME,
+  ENV_MODULE_FILENAME,
 } from '../../helpers/constants';
 import { getGitConfigConfig } from '../../helpers/git';
 
@@ -42,9 +44,13 @@ const ensureThatSetupHasHappened = () => {
   }
 };
 
-const getEnvModulePathFromGitattributes = () => {
+const getEnvModuleDirFromGitattributes = () => {
   const gitattributes = fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8');
-  const match = gitattributes.match(/^(?<envModulePath>.*env\.[jt]s) filter=/m);
+  const pattern = RegExp(
+    `^(?<envModulePath>.*)${ENV_FROM_FILE_FILENAME} filter=`,
+    'm',
+  );
+  const match = gitattributes.match(pattern);
 
   if (!match || !match.groups || !match.groups.envModulePath) {
     console.error(
@@ -60,10 +66,8 @@ const getEnvModulePathFromGitattributes = () => {
 
 const slashQuotes = (s: string) => s.replace(/'/g, "\\'");
 
-const updateEnvModuleFactory = (envModulePath: string) => () => {
-  const env = fs.readFileSync(ENV_FILENAME, 'utf-8');
-
-  const parsedEnv: Record<string, string> = Object.fromEntries(
+const parseEnv = (env: string): Record<string, string> =>
+  Object.fromEntries(
     env
       .split('\n')
       .map((str) => str.trim())
@@ -75,59 +79,123 @@ const updateEnvModuleFactory = (envModulePath: string) => () => {
       }),
   );
 
-  const newEnvContent = Object.entries(parsedEnv)
-    .map(([name, value]) =>
-      value
-        ? `export const ${name} = '${slashQuotes(
-            value,
-          )}' || process.env.${name};`
-        : `export const ${name} = process.env.${name};`,
-    )
-    .join('\n');
+const generateEnvContent = (
+  variableExports: string,
+) => `${ENV_FROM_FILE_COMMENT}
 
-  const envContent = `${ENV_MODULE_COMMENT}
-/* eslint-disable */
-
-${newEnvContent}
-
-/* eslint-enable */
+export default {
+${variableExports}
+};
 `;
 
-  fs.writeFileSync(envModulePath, envContent);
+type SetWarnings = (warnings: React.ReactNode[]) => void;
+
+const warnIfMissing = ({
+  parsedEnv,
+  setWarnings,
+  envModuleFullpath,
+}: {
+  parsedEnv: Record<string, string>;
+  setWarnings: SetWarnings;
+  envModuleFullpath: string;
+}) => {
+  const envModuleContents = fs.readFileSync(envModuleFullpath, 'utf-8');
+
+  setWarnings(
+    Object.keys(parsedEnv).reduce((acc, name) => {
+      if (!envModuleContents.includes(`export const ${name}`)) {
+        acc.push(
+          <Text>
+            <Text color="yellowBright">{envModuleFullpath}</Text> does not
+            export <Text color="cyanBright">{name}</Text>, but it is defined in
+            your <Text color="yellowBright">.env</Text>.
+          </Text>,
+        );
+      }
+      return acc;
+    }, [] as React.ReactNode[]),
+  );
 };
+
+const updateEnvModuleFactory =
+  ({
+    envModuleDir,
+    setWarnings,
+  }: {
+    envModuleDir: string;
+    setWarnings: SetWarnings;
+  }) =>
+  () => {
+    const env = fs.readFileSync(ENV_FILENAME, 'utf-8');
+    const parsedEnv = parseEnv(env);
+
+    const variableExports = Object.entries(parsedEnv)
+      .map(([name, value]) => `  ${name}: '${slashQuotes(value)}',`)
+      .join('\n');
+
+    const envContent = generateEnvContent(variableExports);
+
+    fs.writeFileSync(`${envModuleDir}${ENV_FROM_FILE_FILENAME}`, envContent);
+
+    const envModuleFullpath = `${envModuleDir}${ENV_MODULE_FILENAME}`;
+    warnIfMissing({ parsedEnv, setWarnings, envModuleFullpath });
+  };
+
+const watchFileOptions = { interval: 1000 };
 
 const Watch = () => {
   const [isWatching, setIsWatching] = useState(false);
+  const [warnings, setWarnings] = useState<React.ReactNode[]>([]);
 
   useEffect(() => {
     ensureThatSetupHasHappened();
 
-    const envModulePath = getEnvModulePathFromGitattributes();
-    const updateEnvModule = updateEnvModuleFactory(envModulePath);
+    const envModuleDir = getEnvModuleDirFromGitattributes();
+    const updateEnvModule = updateEnvModuleFactory({
+      envModuleDir,
+      setWarnings,
+    });
 
-    const watcher = fs.watchFile(ENV_FILENAME, updateEnvModule);
+    const envModuleFullpath = `${envModuleDir}${ENV_MODULE_FILENAME}`;
+    const watchers = [
+      fs.watchFile(ENV_FILENAME, watchFileOptions, updateEnvModule),
+      fs.watchFile(envModuleFullpath, watchFileOptions, updateEnvModule),
+    ];
+
     updateEnvModule();
 
     setIsWatching(true);
 
     return () => {
-      watcher.unref();
+      watchers.forEach((watcher) => watcher.unref());
     };
   }, []);
 
   return (
     <Box marginTop={1}>
       {isWatching && (
-        <>
-          <Text color="cyanBright">
-            <Spinner />
+        <Box>
+          <Text>
+            <Text color="cyanBright">
+              <Spinner />
+            </Text>{' '}
+            Watching <Text color="yellowBright">.env</Text> for changes...
+            <Newline />
+            <Newline />
+            {warnings.map((warning) => (
+              <React.Fragment key={warning?.toString()}>
+                <Text>
+                  <Text color="redBright">🚨 WARNING: </Text>
+                  {warning}
+                </Text>
+                <Newline />
+              </React.Fragment>
+            ))}
+            {warnings.length === 0 && (
+              <Text color="greenBright">✅ No warnings</Text>
+            )}
           </Text>
-          <Box marginLeft={1}>
-            <Text>
-              Watching <Text color="yellowBright">.env</Text> for changes...
-            </Text>
-          </Box>
-        </>
+        </Box>
       )}
     </Box>
   );

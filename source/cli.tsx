@@ -15,7 +15,7 @@ Commands
   watch                    Watch .env for changes and update env.[js|ts] accordingly.
 
 Flags
-  -d, --env-moduled-dir    Target directory for env.[js|ts] file.
+  -d, --env-module-dir     Target directory for env.[js|ts] file.
   -y, --yes                Answer "yes" to all confirmation questions.
 `,
   {

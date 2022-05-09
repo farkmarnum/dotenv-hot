@@ -4,6 +4,7 @@ import SelectInput, { ItemProps } from 'ink-select-input';
 
 import {
   GIT_FILTER_SCRIPT_FULLPATH,
+  ENV_FROM_FILE_FILENAME,
   ENV_MODULE_FILENAME,
   GITATTRIBUTES_FILE,
 } from '../../helpers/constants';
@@ -32,16 +33,17 @@ const InitialConfirmation = ({
 
   return (
     <Box flexDirection="column">
+      {' '}
       <Text>
         <Text color="magentaBright">Warning!</Text>
         <Newline />
         This tool will generate the following files:
         <Newline />· A script for use by git:{' '}
         <Text color="yellowBright">{GIT_FILTER_SCRIPT_FULLPATH}</Text>
-        <Newline />· A <Text color="yellowBright">
-          {ENV_MODULE_FILENAME}
-        </Text>{' '}
-        file in the directory of your choosing
+        <Newline />· Two files,{' '}
+        <Text color="yellowBright">{ENV_FROM_FILE_FILENAME}</Text>and{' '}
+        <Text color="yellowBright">{ENV_MODULE_FILENAME}</Text>, in the
+        directory of your choosing
         <Newline />
         <Newline />
         This tool will also modify the following files:
