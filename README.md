@@ -23,10 +23,4 @@ Run `npx dotenv-hot --help` for full usage message.
 
 ## Tips
 
-NOTE: if you get this message
-```
-Git working tree must be clean before 'setup' can be run. Please commit or stash your changes. The current working tree:
-```
-but your working tree looks like it should be clean, `git` may be having an issue with the fiter change.
-
-Running `git add .` should fix.
+NOTE: if you end up in a situation where your `git` working tree looks like it should be clean, but there appears to be a modification made to the `envFromFile` file, running `git add .` should fix.
