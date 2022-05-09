@@ -7,11 +7,56 @@ import {
   ENV_FILENAME,
   ENV_MODULE_COMMENT,
   GITATTRIBUTES_FILE,
+  GIT_FILTER_SCRIPT_FULLPATH,
+  GIT_FILTER_NAME,
+  PACKAGE_NAME,
 } from '../../helpers/constants';
+import { getGitConfigConfig } from '../../helpers/git';
+
+const ensureThatSetupHasHappened = ({ exit }: { exit: () => void }) => {
+  [GITATTRIBUTES_FILE, GIT_FILTER_SCRIPT_FULLPATH, ENV_FILENAME].forEach(
+    (filename) => {
+      if (!fs.existsSync(filename)) {
+        console.error(
+          `ERROR: could not find ${ENV_FILENAME}. Have you run \`npx ${PACKAGE_NAME} setup\` yet?`,
+        );
+        exit();
+      }
+    },
+  );
+
+  const gitConfigPattern = RegExp(
+    `filter.${GIT_FILTER_NAME}.clean=${GIT_FILTER_SCRIPT_FULLPATH}`,
+    'm',
+  );
+  const gitConfig = getGitConfigConfig();
+  if (!gitConfigPattern.test(gitConfig)) {
+    console.error(
+      `ERROR: git config doesn't have the filter enabled. Have you run \`npx ${PACKAGE_NAME} setup\` yet?`,
+    );
+    exit();
+  }
+};
+
+const getEnvModulePathFromGitattributes = () => {
+  const gitattributes = fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8');
+  const match = gitattributes.match(/^(?<envModulePath>.*env\.[jt]s) filter=/m);
+
+  if (!match || !match.groups || !match.groups['envModulePath']) {
+    console.error(
+      `ERROR: could not find env.ts or env.js referenced in ${GITATTRIBUTES_FILE}`,
+    );
+    process.exit();
+  }
+
+  const { envModulePath } = match.groups;
+
+  return envModulePath;
+};
 
 const slashQuotes = (s: string) => s.replace(/'/g, "\\'");
 
-const updateEnvModule = () => {
+const updateEnvModuleFactory = (envModulePath: string) => () => {
   const env = fs.readFileSync(ENV_FILENAME, 'utf-8');
 
   const parsedEnv: Record<string, string> = Object.fromEntries(
@@ -44,18 +89,6 @@ ${newEnvContent}
 /* eslint-enable */
 `;
 
-  const gitattributes = fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8');
-  const match = gitattributes.match(/^(?<envModulePath>.*env\.[jt]s) filter=/m);
-
-  if (!match || !match.groups || !match.groups['envModulePath']) {
-    console.error(
-      `ERROR: could not find env.ts or env.js referenced in ${GITATTRIBUTES_FILE}`,
-    );
-    process.exit();
-  }
-
-  const { envModulePath } = match.groups;
-
   fs.writeFileSync(envModulePath, envContent);
 };
 
@@ -63,13 +96,12 @@ const Watch = () => {
   const { exit } = useApp();
 
   useEffect(() => {
-    if (!fs.existsSync(ENV_FILENAME)) {
-      console.error(`ERROR: could not find ${ENV_FILENAME}`);
-      exit();
-    }
+    ensureThatSetupHasHappened({ exit });
+
+    const envModulePath = getEnvModulePathFromGitattributes();
+    const updateEnvModule = updateEnvModuleFactory(envModulePath);
 
     const watcher = fs.watchFile(ENV_FILENAME, updateEnvModule);
-
     updateEnvModule();
 
     return () => {

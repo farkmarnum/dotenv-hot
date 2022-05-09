@@ -3,7 +3,6 @@ import { Box, Text, Static, Newline, useApp } from 'ink';
 import TextInput from 'ink-text-input';
 
 import InitialConfirmation from '../InitialConfirmation';
-import { isTypescript } from '../../helpers/util';
 import {
   checkForExistingEnvModule,
   writeEnvModuleInit,
@@ -16,9 +15,10 @@ import {
   enableGitFilter,
   gitStageAll,
 } from '../../helpers/git';
-import { GIT_FILTER_SCRIPT_FULLPATH } from '../../helpers/constants';
-
-const envModuleFilename = `env.${isTypescript() ? 'ts' : 'js'}`;
+import {
+  GIT_FILTER_SCRIPT_FULLPATH,
+  ENV_MODULE_FILENAME,
+} from '../../helpers/constants';
 
 const Input = ({ setValue }: { setValue: (s: string) => void }) => {
   const [query, setQuery] = useState('');
@@ -26,7 +26,7 @@ const Input = ({ setValue }: { setValue: (s: string) => void }) => {
   return (
     <Box>
       <Text>
-        This tool will create an {envModuleFilename}
+        This tool will create a {ENV_MODULE_FILENAME}
         <Text color="cyanBright" /> file in your repository that will not be
         tracked by Git.
         <Newline />
@@ -78,7 +78,7 @@ const Setup = () => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
   const envModuleFullpath = envModuleDir
-    ? `${envModuleDir}/${envModuleFilename}`
+    ? `${envModuleDir}/${ENV_MODULE_FILENAME}`
     : undefined;
 
   // HANDLE STEP CHANGE:

@@ -59,3 +59,7 @@ export const enableGitFilter = () => {
 export const gitStageAll = () => {
   execSync('git add .');
 };
+
+// Show git config:
+export const getGitConfigConfig = () =>
+  execSync('git config --list --local', { encoding: 'utf-8' });
