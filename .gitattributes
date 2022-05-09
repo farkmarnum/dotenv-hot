@@ -1,1 +1,3 @@
 * text=auto eol=lf
+
+source/env.ts filter=dotenv-hot-env-module
