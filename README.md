@@ -1,16 +1,13 @@
 # dotenv-hot
 
 ## Setup
-```bash
-npx dotenv-hot setup
-```
 
-## Hot reloaded .env
-```bash
-npx dotenv-hot watch
-```
+1. Set up with `npx dotenv-hot setup`
+2. Run wth `npx dotenv-hot watch`
+
+## Usage
+
+Run `npx dotenv-hot --help` for full usage message.
 
 # TODOs
-- make watch check to make sure setup has been run
-- Add command line option to specify env module path
 - Add some sort of babel + typescript config to load from env.ts
