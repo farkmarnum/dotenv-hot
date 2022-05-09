@@ -189,8 +189,9 @@ const Watch = () => {
             Watching <Text color="yellowBright">.env</Text> for changes...
             <Newline />
             <Newline />
-            {warnings.map((warning) => (
-              <React.Fragment key={warning?.toString()}>
+            {warnings.map((warning, i) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <React.Fragment key={i}>
                 <Text>
                   <Text color="redBright">🚨 WARNING: </Text>
                   {warning}
