@@ -2,13 +2,12 @@ import fs from 'fs';
 import { execSync } from 'child_process';
 
 import {
+  GITATTRIBUTES_FILE,
   GIT_FILTER_SCRIPT_DIR,
   GIT_FILTER_SCRIPT_FULLPATH,
   GIT_FILTER_SCRIPT_CONTENTS,
   GIT_FILTER_NAME,
 } from './constants';
-
-const GITATTRIBUTES_FILE = '.gitattributes';
 
 export const checkForGitRepo = (): string | undefined => {
   const isGitRepository = fs.existsSync('.git');
