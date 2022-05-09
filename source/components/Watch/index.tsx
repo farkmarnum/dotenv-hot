@@ -13,6 +13,7 @@ import {
   GIT_FILTER_NAME,
   PACKAGE_NAME,
   ENV_MODULE_FILENAME,
+  IS_TYPESCRIPT,
 } from '../../helpers/constants';
 import { getGitConfigConfig } from '../../helpers/git';
 
@@ -86,7 +87,7 @@ const generateEnvContent = (
 
 export default {
 ${variableExports}
-};
+}${IS_TYPESCRIPT ? ' as Record<string, string>' : ''};
 `;
 
 type SetWarnings = (warnings: React.ReactNode[]) => void;

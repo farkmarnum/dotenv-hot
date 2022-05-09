@@ -5,7 +5,8 @@ export const PACKAGE_NAME = packageName;
 
 export const ENV_FILENAME = '.env';
 
-const IS_TYPESCRIPT = isTypescript();
+export const IS_TYPESCRIPT = isTypescript();
+
 const EXTENSION = IS_TYPESCRIPT ? 'ts' : 'js';
 
 const ENV_FROM_FILE_PREFIX = '.envFromFile';
