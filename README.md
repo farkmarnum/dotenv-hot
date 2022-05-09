@@ -20,3 +20,13 @@ To make things easier, you can add these as `scripts` and include your config op
 ## Usage
 
 Run `npx dotenv-hot --help` for full usage message.
+
+## Tips
+
+NOTE: if you get this message
+```
+Git working tree must be clean before 'setup' can be run. Please commit or stash your changes. The current working tree:
+```
+but your working tree looks like it should be clean, `git` may be having an issue with the fiter change.
+
+Running `git add .` should fix.
