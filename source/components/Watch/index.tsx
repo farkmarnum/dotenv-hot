@@ -14,21 +14,19 @@ const slashQuotes = (s: string) => s.replace(/'/g, "\\'");
 const updateEnvModule = () => {
   const env = fs.readFileSync(ENV_FILENAME, 'utf-8');
 
-  const parsedEnv: [string, string][] = env
-    .split('\n')
-    .map((str) => str.trim())
-    .filter((a) => a.length > 0 && !a.startsWith('#'))
-    .map((str) => {
-      const [name, ...rest] = str.split('=');
+  const parsedEnv: Record<string, string> = Object.fromEntries(
+    env
+      .split('\n')
+      .map((str) => str.trim())
+      .filter((a) => a.length > 0 && !a.startsWith('#'))
+      .map((str) => {
+        const [name, ...rest] = str.split('=');
 
-      return [name, rest.join('=')];
-    })
-    .filter(([name, value]) => name !== undefined && value !== undefined) as [
-    string,
-    string,
-  ][]; // TODO remove the type cast and use a type guard
+        return [name, rest.join('=')];
+      }),
+  );
 
-  const newEnvContent = parsedEnv
+  const newEnvContent = Object.entries(parsedEnv)
     .map(([name, value]) =>
       value
         ? `export const ${name} = '${slashQuotes(
