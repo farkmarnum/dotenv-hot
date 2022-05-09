@@ -33,7 +33,6 @@ const InitialConfirmation = ({
 
   return (
     <Box flexDirection="column">
-      {' '}
       <Text>
         <Text color="magentaBright">Warning!</Text>
         <Newline />

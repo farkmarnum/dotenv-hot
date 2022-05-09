@@ -4,7 +4,10 @@
   "description": "Dotenv that works with hot reloading",
   "license": "MIT",
   "engines": {
-    "node": ">=10"
+    "node": ">=14.16"
+  },
+  "env": {
+    "node": true
   },
   "author": "Mark Farnum",
   "keywords": [
