@@ -5,7 +5,8 @@
     "jsx": "react",
     "esModuleInterop": true,
     "outDir": "dist",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "noPropertyAccessFromIndexSignature": false
   },
   "include": ["source"]
 }
