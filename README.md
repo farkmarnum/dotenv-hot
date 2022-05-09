@@ -1,25 +1,29 @@
 # dotenv-hot
+Dotenv that works with hot reloading.
 
 ## Setup
 
-1. Setup with `npx dotenv-hot setup`
-2. Run wth `npx dotenv-hot watch`
+Install:
+```bash
+yarn add -D dotenv-hot
+# OR
+npm install -D dotenv-hot
+```
 
-To make things easier, you can add these as `scripts` and include your config options:
-
+Add to your `package.json`:
 ```json
-// package.json
 {
   "scripts": {
-    "setup-env": "npx ../dotenv-hot setup -y -d src",
-    "watch-env": "npx ../dotenv-hot watch",
+    "setup-env": "dotenv-hot setup -y -d src",
+    "watch-env": "dotenv-hot watch"
   }
 }
 ```
-
 ## Usage
 
-Run `npx dotenv-hot --help` for full usage message.
+Each person who has a local copy of the repository will need to run `yarn setup-env` once, and then can run `yarn watch-env` concurrently while developing.
+
+You can also run `npx dotenv-hot --help` for a full usage message.
 
 ## Tips
 
