@@ -176,6 +176,10 @@ const Watch = () => {
       {isWatching && (
         <Box>
           <Text>
+            <Text color="green">dotenv-hot</Text>
+            <Newline />
+            <Text color="green">----------</Text>
+            <Newline />
             <Text color="cyanBright">
               <Spinner />
             </Text>{' '}
