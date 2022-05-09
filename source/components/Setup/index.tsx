@@ -3,13 +3,18 @@ import { Box, Text, Static, Newline, useApp } from 'ink';
 import TextInput from 'ink-text-input';
 
 import InitialConfirmation from '../InitialConfirmation';
-import { guardGit, guardEnvModule } from '../../helpers/guards';
 import { isTypescript } from '../../helpers/util';
-import { writeEnvModuleInit } from '../../helpers/envModule';
 import {
+  checkForExistingEnvModule,
+  writeEnvModuleInit,
+} from '../../helpers/envModule';
+import {
+  checkForGitRepo,
+  checkForCleanWorkingTree,
   createGitFilterScript,
   writeGitattributes,
   enableGitFilter,
+  gitStageAll,
 } from '../../helpers/git';
 import { GIT_FILTER_SCRIPT_FULLPATH } from '../../helpers/constants';
 
@@ -37,13 +42,15 @@ const Input = ({ setValue }: { setValue: (s: string) => void }) => {
 
 const steps = [
   'initial-confirmation',
-  'git-check',
+  'git-repo-check',
+  'git-clean-check',
   'env-module-prompt',
   'env-module-check',
   'env-module-create',
   'git-filter-script-create',
   'write-gitattributes',
   'git-filter-enable',
+  'git-stage-all',
 ] as const;
 
 type Step = typeof steps[number];
@@ -79,56 +86,85 @@ const Setup = () => {
     setInput('');
 
     let nextStep: Step | undefined;
+    let newErrorMessage: string | undefined;
 
-    if (step === 'git-check') {
-      const msg = guardGit();
-      if (msg) {
-        setErrorMessage(msg);
-        markStepFailed(step);
-      } else {
+    switch (step) {
+      case 'initial-confirmation':
+        break;
+
+      case 'git-repo-check':
+        newErrorMessage = checkForGitRepo();
+        if (newErrorMessage) {
+          setErrorMessage(newErrorMessage);
+          markStepFailed(step);
+        } else {
+          markStepSucceeded(step);
+          nextStep = 'git-clean-check';
+        }
+        break;
+
+      case 'git-clean-check':
+        newErrorMessage = checkForCleanWorkingTree();
+        if (newErrorMessage) {
+          setErrorMessage(newErrorMessage);
+          markStepFailed(step);
+        } else {
+          markStepSucceeded(step);
+          nextStep = 'env-module-prompt';
+        }
+        break;
+
+      case 'env-module-prompt':
+        break;
+
+      case 'env-module-check':
+        if (!envModuleFullpath) throw new Error('no envModuleFullpath');
+
+        newErrorMessage = checkForExistingEnvModule(envModuleFullpath);
+        if (newErrorMessage) {
+          setErrorMessage(newErrorMessage);
+          markStepFailed(step);
+        } else {
+          markStepSucceeded(step);
+          nextStep = 'env-module-create';
+        }
+        break;
+
+      case 'env-module-create':
+        if (!envModuleFullpath) throw new Error('no envModuleFullpath');
+
+        writeEnvModuleInit(envModuleFullpath);
         markStepSucceeded(step);
-        nextStep = 'env-module-prompt';
-      }
-    }
+        nextStep = 'git-filter-script-create';
+        break;
 
-    if (step === 'env-module-check') {
-      if (!envModuleFullpath) throw new Error('no envModuleFullpath');
-
-      const msg = guardEnvModule(envModuleFullpath);
-      if (msg) {
-        setErrorMessage(msg);
-        markStepFailed(step);
-      } else {
+      case 'git-filter-script-create':
+        createGitFilterScript();
         markStepSucceeded(step);
-        nextStep = 'env-module-create';
-      }
-    }
+        nextStep = 'write-gitattributes';
+        break;
 
-    if (step === 'env-module-create') {
-      if (!envModuleFullpath) throw new Error('no envModuleFullpath');
+      case 'write-gitattributes':
+        if (!envModuleFullpath) throw new Error('no envModuleFullpath');
 
-      writeEnvModuleInit(envModuleFullpath);
-      markStepSucceeded(step);
-      nextStep = 'git-filter-script-create';
-    }
+        writeGitattributes(envModuleFullpath);
+        markStepSucceeded(step);
+        nextStep = 'git-filter-enable';
+        break;
 
-    if (step === 'git-filter-script-create') {
-      createGitFilterScript();
-      markStepSucceeded(step);
-      nextStep = 'write-gitattributes';
-    }
+      case 'git-filter-enable':
+        enableGitFilter();
+        markStepSucceeded(step);
+        nextStep = 'git-stage-all';
+        break;
 
-    if (step === 'write-gitattributes') {
-      if (!envModuleFullpath) throw new Error('no envModuleFullpath');
+      case 'git-stage-all':
+        gitStageAll();
+        markStepSucceeded(step);
+        break;
 
-      writeGitattributes(envModuleFullpath);
-      markStepSucceeded(step);
-      nextStep = 'git-filter-enable';
-    }
-
-    if (step === 'git-filter-enable') {
-      enableGitFilter();
-      markStepSucceeded(step);
+      default:
+        throw new Error(`Unknown step: ${step}`);
     }
 
     if (nextStep && nextStep !== step) {
@@ -156,7 +192,7 @@ const Setup = () => {
 
     if (didConfirm) {
       markStepSucceeded(step);
-      setStep('git-check');
+      setStep('git-repo-check');
     } else {
       exit();
     }
@@ -171,8 +207,14 @@ const Setup = () => {
 
           return (
             <Box key={completedStep.step}>
-              {completedStep.step === 'git-check' && (
+              {completedStep.step === 'git-repo-check' && (
                 <Text>· {status} Making sure this is a git repository</Text>
+              )}
+
+              {completedStep.step === 'git-clean-check' && (
+                <Text>
+                  · {status} Making sure the git working tree is clean
+                </Text>
               )}
 
               {completedStep.step === 'env-module-check' && (
@@ -200,6 +242,10 @@ const Setup = () => {
 
               {completedStep.step === 'git-filter-enable' && (
                 <Text>· {status} Enabling the new git filter</Text>
+              )}
+
+              {completedStep.step === 'git-stage-all' && (
+                <Text>· {status} Staging all changed and added files</Text>
               )}
             </Box>
           );

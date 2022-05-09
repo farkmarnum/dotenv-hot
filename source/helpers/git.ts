@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 
 import {
   GIT_FILTER_SCRIPT_DIR,
@@ -9,13 +9,29 @@ import {
   WORKING_DIR,
 } from './constants';
 
+const GITATTRIBUTES_FILE = `${WORKING_DIR}/.gitattributes`;
+
+export const checkForGitRepo = (): string | undefined => {
+  const isGitRepository = fs.existsSync(`${WORKING_DIR}/.git`);
+  if (!isGitRepository) {
+    return "This directory doesn't seem to be a git repository (couldn't find .git)";
+  }
+  return undefined;
+};
+
+export const checkForCleanWorkingTree = (): string | undefined => {
+  const output = execSync('git status --porcelain', { encoding: 'utf-8' });
+  if (output.length > 0) {
+    return "Git working tree must be clean before 'setup' can be run. Please commit or stash your changes.";
+  }
+  return undefined;
+};
+
 export const createGitFilterScript = () => {
   fs.mkdirSync(GIT_FILTER_SCRIPT_DIR, { recursive: true });
   fs.writeFileSync(GIT_FILTER_SCRIPT_FULLPATH, GIT_FILTER_SCRIPT_CONTENTS);
   fs.chmodSync(GIT_FILTER_SCRIPT_FULLPATH, '755');
 };
-
-const GITATTRIBUTES_FILE = `${WORKING_DIR}/.gitattributes`;
 
 export const writeGitattributes = (envModuleDir: string) => {
   let contents = '';
@@ -34,9 +50,14 @@ export const writeGitattributes = (envModuleDir: string) => {
   fs.writeFileSync(GITATTRIBUTES_FILE, contents);
 };
 
-// Add this filter to .git/config
+// Add this filter to .git/config:
 export const enableGitFilter = () => {
-  exec(
+  execSync(
     `git config --local filter.${GIT_FILTER_NAME}.clean ${GIT_FILTER_SCRIPT_FULLPATH}`,
   );
+};
+
+// Stage all files:
+export const gitStageAll = () => {
+  execSync('git add .');
 };
