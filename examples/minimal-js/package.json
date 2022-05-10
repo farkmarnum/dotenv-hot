@@ -1,0 +1,11 @@
+{
+  "name": "minimal-example",
+  "version": "1.0.0",
+  "description": "This is a minimal example that uses TypeScript.",
+  "scripts": {
+    "install-dotenv-hot": " npx ../.. setup -y -e examples/minimal-js/src -s examples/minimal-js/scripts",
+    "watch-env": "npx ../.. watch"
+  },
+  "author": "",
+  "license": "MIT"
+}
