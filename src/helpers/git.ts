@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { execSync } from 'child_process';
 
 import {
@@ -26,7 +27,7 @@ export const checkForCleanWorkingTree = (): string | undefined => {
 };
 
 export const createGitFilterScript = (scriptsDir: string) => {
-  const fullpath = `${scriptsDir}/${GIT_FILTER_SCRIPT_FILENAME}`;
+  const fullpath = path.resolve(scriptsDir, GIT_FILTER_SCRIPT_FILENAME);
 
   fs.mkdirSync(scriptsDir, { recursive: true });
   fs.writeFileSync(fullpath, GIT_FILTER_SCRIPT_CONTENTS);
@@ -55,7 +56,7 @@ export const writeGitattributes = ({
 
 // Add this filter to .git/config:
 export const enableGitFilter = (scriptsDir: string) => {
-  const scriptFullpath = `${scriptsDir}/${GIT_FILTER_SCRIPT_FILENAME}`;
+  const scriptFullpath = path.resolve(scriptsDir, GIT_FILTER_SCRIPT_FILENAME);
 
   execSync(
     `git config --local filter.${GIT_FILTER_NAME}.clean script=${scriptFullpath}`,

@@ -1,3 +1,4 @@
+import path from 'path';
 import React, { useEffect, useState } from 'react';
 import { Box, Text, Static, Newline, useApp } from 'ink';
 
@@ -68,11 +69,11 @@ const Setup = ({
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
   const envFromFileFullpath = envModuleDir
-    ? `${envModuleDir}/${ENV_FROM_FILE_FILENAME}`
+    ? path.resolve(envModuleDir, ENV_FROM_FILE_FILENAME)
     : undefined;
 
   const envModuleFullpath = envModuleDir
-    ? `${envModuleDir}/${ENV_MODULE_FILENAME}`
+    ? path.resolve(envModuleDir, ENV_MODULE_FILENAME)
     : undefined;
 
   // HANDLE STEP CHANGE:

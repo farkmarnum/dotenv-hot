@@ -1,3 +1,4 @@
+import path from 'path';
 import fs from 'fs';
 import React, { useState, useEffect } from 'react';
 import { Box, Newline, Text } from 'ink';
@@ -14,8 +15,14 @@ import {
   PACKAGE_NAME,
   ENV_MODULE_FILENAME,
   IS_TYPESCRIPT,
+  GITATTRIBUTES_COMMENT_PREFIX,
 } from '../../helpers/constants';
-import { getGitConfig, enableGitFilter, gitStage } from '../../helpers/git';
+import {
+  getGitConfig,
+  enableGitFilter,
+  gitStage,
+  getGitRepoRootDir,
+} from '../../helpers/git';
 
 const showWarning = (msg: string) => {
   console.error(
@@ -40,16 +47,16 @@ const ensureGitFilter = ({ scriptsDir }: { scriptsDir: string }) => {
 };
 
 const ensureThatSetupHasHappened = ({
-  envModuleDir,
+  envFileFullpath,
   scriptsDir,
 }: {
-  envModuleDir: string;
+  envFileFullpath: string;
   scriptsDir: string;
 }) => {
   // Ensure that necessary files are present:
   [
-    `${envModuleDir}/${ENV_FILENAME}`,
-    `${scriptsDir}/${GIT_FILTER_SCRIPT_FILENAME}`,
+    envFileFullpath,
+    path.resolve(scriptsDir, GIT_FILTER_SCRIPT_FILENAME),
   ].forEach((filename) => {
     if (!fs.existsSync(filename)) {
       showWarning(`Could not find ${filename}`);
@@ -73,17 +80,24 @@ const getDataFromGitattributes = () => {
     }
   }
 
-  const pattern = RegExp(
-    `^(?<envModuleDir>.*)${ENV_FROM_FILE_FILENAME} filter=(.*)# script=(?<scriptsDir>.*)`,
+  const attributePattern = RegExp(
+    `^(?<envModuleDir>.*)${ENV_FROM_FILE_FILENAME} filter=(.*)`,
     'm',
   );
-  const match = gitattributes.match(pattern);
+  const commentPattern = RegExp(
+    `^${GITATTRIBUTES_COMMENT_PREFIX} script=(?<scriptsDir>.*)`,
+    'm',
+  );
+  const attributeMatch = gitattributes.match(attributePattern);
+  const commentMatch = gitattributes.match(commentPattern);
 
   if (
-    !match ||
-    !match.groups ||
-    !match.groups.envModuleDir ||
-    !match.groups.scriptsDir
+    !attributeMatch ||
+    !attributeMatch.groups ||
+    !attributeMatch.groups.envModuleDir ||
+    !commentMatch ||
+    !commentMatch.groups ||
+    !commentMatch.groups.scriptsDir
   ) {
     console.error(
       `ERROR: could not the relevant data in ${GITATTRIBUTES_FILE}`,
@@ -91,7 +105,8 @@ const getDataFromGitattributes = () => {
     process.exit();
   }
 
-  const { envModuleDir, scriptsDir } = match.groups;
+  const { envModuleDir } = attributeMatch.groups;
+  const { scriptsDir } = commentMatch.groups;
 
   return { envModuleDir, scriptsDir };
 };
@@ -152,14 +167,16 @@ const warnIfMissing = ({
 
 const updateEnvModuleFactory =
   ({
+    envFileFullpath,
     envModuleDir,
     setWarnings,
   }: {
+    envFileFullpath: string;
     envModuleDir: string;
     setWarnings: SetWarnings;
   }) =>
   () => {
-    const env = fs.readFileSync(ENV_FILENAME, 'utf-8');
+    const env = fs.readFileSync(envFileFullpath, 'utf-8');
     const parsedEnv = parseEnv(env);
 
     const variableExports = Object.entries(parsedEnv)
@@ -179,23 +196,28 @@ const updateEnvModuleFactory =
 
 const watchFileOptions = { interval: 1000 };
 
+const gitRootDir = getGitRepoRootDir();
+
 const Watch = () => {
+  const envFileFullpath = path.resolve(gitRootDir, ENV_FILENAME);
+
   const [isWatching, setIsWatching] = useState(false);
   const [warnings, setWarnings] = useState<React.ReactNode[]>([]);
 
   useEffect(() => {
     const { envModuleDir, scriptsDir } = getDataFromGitattributes();
 
-    ensureThatSetupHasHappened({ envModuleDir, scriptsDir });
+    ensureThatSetupHasHappened({ envFileFullpath, scriptsDir });
 
     const updateEnvModule = updateEnvModuleFactory({
+      envFileFullpath,
       envModuleDir,
       setWarnings,
     });
 
     const envModuleFullpath = `${envModuleDir}${ENV_MODULE_FILENAME}`;
     const watchers = [
-      fs.watchFile(ENV_FILENAME, watchFileOptions, updateEnvModule),
+      fs.watchFile(envFileFullpath, watchFileOptions, updateEnvModule),
       fs.watchFile(envModuleFullpath, watchFileOptions, updateEnvModule),
     ];
 

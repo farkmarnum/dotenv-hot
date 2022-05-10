@@ -1,3 +1,4 @@
+import path from 'path';
 import React from 'react';
 import { Box, Newline, Text } from 'ink';
 import SelectInput, { ItemProps } from 'ink-select-input';
@@ -45,15 +46,15 @@ const InitialConfirmation = ({
         This tool will generate the following files:
         <Newline />· A script for use by git:{' '}
         <Text color="yellowBright">
-          {scriptsDir}/{GIT_FILTER_SCRIPT_FILENAME}
+          {path.resolve(scriptsDir, GIT_FILTER_SCRIPT_FILENAME)}
         </Text>
         <Newline />· Two files,{' '}
         <Text color="yellowBright">
-          {envModuleDir}/{ENV_FROM_FILE_FILENAME}
+          {path.resolve(envModuleDir, ENV_FROM_FILE_FILENAME)}
         </Text>{' '}
         and{' '}
         <Text color="yellowBright">
-          {envModuleDir}/{ENV_MODULE_FILENAME}
+          {path.resolve(envModuleDir, ENV_MODULE_FILENAME)}
         </Text>
         <Newline />
         <Newline />

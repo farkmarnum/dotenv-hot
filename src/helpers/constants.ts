@@ -50,3 +50,5 @@ export const GIT_FILTER_SCRIPT_FILENAME = `git-filter-${GIT_FILTER_NAME}.sh`;
 export const GIT_FILTER_SCRIPT_CONTENTS = `echo "${ENV_FROM_FILE_TEMPLATE}"`;
 
 export const GITATTRIBUTES_FILE = '.gitattributes';
+
+export const GITATTRIBUTES_COMMENT_PREFIX = `# AUTOMATED COMMENT BY ${PACKAGE_NAME}, DO NOT REMOVE -- `;

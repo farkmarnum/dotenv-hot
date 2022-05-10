@@ -35,12 +35,16 @@ const App: React.FC<{
     }
   }, []);
 
-  const envModuleDirFull = `${GIT_ROOT_DIR}/${
-    envModuleDir || DEFAULTS.envModuleDir
-  }`;
+  const envModuleDirFull = path.join(
+    GIT_ROOT_DIR,
+    envModuleDir || DEFAULTS.envModuleDir,
+  );
   const envModuleDirRelative = path.relative(CWD, envModuleDirFull);
 
-  const scriptsDirFull = `${GIT_ROOT_DIR}/${scriptsDir || DEFAULTS.scriptsDir}`;
+  const scriptsDirFull = path.join(
+    GIT_ROOT_DIR,
+    scriptsDir || DEFAULTS.scriptsDir,
+  );
   const scriptsDirRelative = path.relative(CWD, scriptsDirFull);
 
   return (
