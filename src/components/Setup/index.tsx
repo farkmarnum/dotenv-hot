@@ -37,7 +37,11 @@ const Input = ({ setValue }: { setValue: (s: string) => void }) => {
         this file will be maintained by you and will export your env vars for
         usage
         <Newline />
+        <Newline />
         Please specify the path where you would like these file to be located.
+        <Newline />
+        NOTE: <Text color="yellow">&apos;src&apos;</Text> is common, use{' '}
+        <Text color="yellow">&apos;.&apos;</Text> for the current directory.
         <Newline />
         <Newline />
         Path:{' '}

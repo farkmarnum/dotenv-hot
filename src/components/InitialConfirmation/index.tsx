@@ -36,11 +36,12 @@ const InitialConfirmation = ({
       <Text>
         <Text color="magentaBright">Warning!</Text>
         <Newline />
+        <Newline />
         This tool will generate the following files:
         <Newline />· A script for use by git:{' '}
         <Text color="yellowBright">{GIT_FILTER_SCRIPT_FULLPATH}</Text>
         <Newline />· Two files,{' '}
-        <Text color="yellowBright">{ENV_FROM_FILE_FILENAME}</Text>and{' '}
+        <Text color="yellowBright">{ENV_FROM_FILE_FILENAME}</Text> and{' '}
         <Text color="yellowBright">{ENV_MODULE_FILENAME}</Text>, in the
         directory of your choosing
         <Newline />
