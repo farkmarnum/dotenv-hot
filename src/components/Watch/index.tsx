@@ -20,6 +20,7 @@ import {
   getGitRepoRootDir,
 } from '../../helpers/git';
 import { showWarning, getDataFromGitattributes } from '../../helpers/util';
+import { writeEnvFromFileInit } from '../../helpers/envModule';
 
 const ensureGitFilter = ({ scriptsDir }: { scriptsDir: string }) => {
   const gitConfigPattern = RegExp(
@@ -144,6 +145,15 @@ const watchFileOptions = { interval: 1000 };
 
 const gitRootDir = getGitRepoRootDir();
 
+const resetEnvFromFile = ({ envModuleDir }: { envModuleDir: string }) => {
+  const envFromFileFullpath = path.resolve(
+    envModuleDir,
+    ENV_FROM_FILE_FILENAME,
+  );
+
+  writeEnvFromFileInit(envFromFileFullpath);
+};
+
 const Watch = () => {
   const envFileFullpath = path.resolve(gitRootDir, ENV_FILENAME);
 
@@ -152,6 +162,10 @@ const Watch = () => {
 
   useEffect(() => {
     const { envModuleDir, scriptsDir } = getDataFromGitattributes();
+
+    // Reset envFromFile on quit:
+    process.on('exit', () => resetEnvFromFile({ envModuleDir }));
+    process.on('SIGINT', process.exit);
 
     ensureThatSetupHasHappened({ envFileFullpath, scriptsDir });
 
