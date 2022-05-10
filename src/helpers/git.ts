@@ -7,6 +7,7 @@ import {
   GIT_FILTER_SCRIPT_FILENAME,
   GIT_FILTER_SCRIPT_CONTENTS,
   GIT_FILTER_NAME,
+  GITATTRIBUTES_COMMENT_PREFIX,
 } from './constants';
 
 export const checkForGitRepo = (): string | undefined => {
@@ -46,7 +47,10 @@ export const writeGitattributes = ({
     contents = `${fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8')}`;
   }
 
-  const addition = `${envFromFileFullpath} filter=${GIT_FILTER_NAME} # script=${scriptsDir}`;
+  const addition = [
+    `${envFromFileFullpath} filter=${GIT_FILTER_NAME}`,
+    `${GITATTRIBUTES_COMMENT_PREFIX} script=${scriptsDir}`,
+  ].join('\n');
 
   // If this line isn't in .gitattributes yet, add it:
   if (!contents.includes(addition)) {
