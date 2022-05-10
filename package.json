@@ -1,6 +1,6 @@
 {
   "name": "dotenv-hot",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Dotenv that works with hot reloading",
   "license": "MIT",
   "engines": {
