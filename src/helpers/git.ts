@@ -63,7 +63,7 @@ export const enableGitFilter = (scriptsDir: string) => {
   const scriptFullpath = path.resolve(scriptsDir, GIT_FILTER_SCRIPT_FILENAME);
 
   execSync(
-    `git config --local filter.${GIT_FILTER_NAME}.clean script=${scriptFullpath}`,
+    `git config --local filter.${GIT_FILTER_NAME}.clean ${scriptFullpath}`,
   );
 };
 
