@@ -1,7 +1,7 @@
-import { name as packageName } from '../../package.json';
+import packageInfo from '../../package.json';
 import { isTypescript } from './util';
 
-export const PACKAGE_NAME = packageName;
+export const PACKAGE_NAME = packageInfo.name;
 
 export const ENV_FILENAME = '.env';
 

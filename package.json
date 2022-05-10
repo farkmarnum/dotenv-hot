@@ -1,6 +1,6 @@
 {
   "name": "dotenv-hot",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "Dotenv that works with hot reloading",
   "license": "MIT",
   "engines": {
@@ -22,8 +22,7 @@
     "url": "git+https://github.com/farkmarnum/dotenv-hot"
   },
   "scripts": {
-    "build": "tsc && chmod u+x dist/source/cli.js",
-    "build:watch": "yarn build && tsc --watch",
+    "build": "tsc",
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "prepublishOnly": "yarn clean && yarn lint && yarn test && yarn build",
