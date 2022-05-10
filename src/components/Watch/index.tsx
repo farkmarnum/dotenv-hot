@@ -15,7 +15,7 @@ import {
   ENV_MODULE_FILENAME,
   IS_TYPESCRIPT,
 } from '../../helpers/constants';
-import { getGitConfigConfig } from '../../helpers/git';
+import { getGitConfig, enableGitFilter, gitStage } from '../../helpers/git';
 
 const ensureThatSetupHasHappened = () => {
   [GITATTRIBUTES_FILE, GIT_FILTER_SCRIPT_FULLPATH, ENV_FILENAME].forEach(
@@ -32,17 +32,19 @@ const ensureThatSetupHasHappened = () => {
       }
     },
   );
+};
 
+const ensureGitFilter = () => {
   const gitConfigPattern = RegExp(
     `filter.${GIT_FILTER_NAME}.clean=${GIT_FILTER_SCRIPT_FULLPATH}`,
     'm',
   );
-  const gitConfig = getGitConfigConfig();
-  if (!gitConfigPattern.test(gitConfig)) {
-    console.error(
-      `ERROR: git config doesn't have the filter enabled. Have you run \`npx ${PACKAGE_NAME} setup\` yet?`,
-    );
-    process.exit(1);
+  const gitConfig = getGitConfig();
+
+  const gitFilterNotEnabled = !gitConfigPattern.test(gitConfig);
+
+  if (gitFilterNotEnabled) {
+    enableGitFilter();
   }
 };
 
@@ -140,6 +142,9 @@ const updateEnvModuleFactory =
 
     fs.writeFileSync(`${envModuleDir}${ENV_FROM_FILE_FILENAME}`, envContent);
 
+    // NOTE: sometimes the `git` working tree looks like it should be clean, but there appears to be a modification made to the `envFromFile` file -- running `git add` fixes it:
+    gitStage(`${envModuleDir}${ENV_FROM_FILE_FILENAME}`);
+
     const envModuleFullpath = `${envModuleDir}${ENV_MODULE_FILENAME}`;
     warnIfMissing({ parsedEnv, setWarnings, envModuleFullpath });
   };
@@ -152,6 +157,7 @@ const Watch = () => {
 
   useEffect(() => {
     ensureThatSetupHasHappened();
+    ensureGitFilter();
 
     const envModuleDir = getEnvModuleDirFromGitattributes();
     const updateEnvModule = updateEnvModuleFactory({

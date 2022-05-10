@@ -53,11 +53,16 @@ export const enableGitFilter = () => {
   );
 };
 
+// Stage a file:
+export const gitStage = (filename: string) => {
+  execSync(`git add ${filename}`);
+};
+
 // Stage all files:
 export const gitStageAll = () => {
   execSync('git add .');
 };
 
 // Show git config:
-export const getGitConfigConfig = () =>
+export const getGitConfig = () =>
   execSync('git config --list --local', { encoding: 'utf-8' });
