@@ -5,8 +5,15 @@ Dotenv that works with hot reloading.
 ## Installation
 
 ```bash
+# Using defaults:
 npx dotenv-hot install
+
+# Or, specifying directories:
+npx dotenv-hot install --env-module-dir client/src --scripts-dir lib
+
+# See `npx dotenv-hot --help` for full usage instructions.
 ```
+
 *After running this, commit the staged changes.*
 
 ## Usage
@@ -23,8 +30,6 @@ Or, install with `yarn add -D dotenv-hot` and add to your `package.json`:
   }
 }
 ```
-
-You can also run `npx dotenv-hot --help` for a full usage message.
 
 ## To remove
 
