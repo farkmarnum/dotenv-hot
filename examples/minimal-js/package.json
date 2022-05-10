@@ -16,5 +16,6 @@
     "@babel/node": "^7.17.10",
     "@babel/preset-env": "^7.17.10",
     "nodemon": "^2.0.16"
-  }
+  },
+  "private": true
 }
