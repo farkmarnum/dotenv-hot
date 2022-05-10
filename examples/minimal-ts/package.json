@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "This is a minimal example that uses TypeScript.",
   "scripts": {
-    "install-dotenv-hot": "npx ../.. setup -y -d src",
+    "install-dotenv-hot": " npx ../.. setup -y -e examples/minimal-ts/src -s examples/minimal-ts/scripts",
     "watch-env": "npx ../.. watch",
     "start": "tsc --watch",
     "build": "tsc",
