@@ -36,10 +36,10 @@ export const createGitFilterScript = (scriptsDir: string) => {
 };
 
 export const writeGitattributes = ({
-  envFromFileFullpath,
+  envFromFileRelativePath,
   scriptsDir,
 }: {
-  envFromFileFullpath: string;
+  envFromFileRelativePath: string;
   scriptsDir: string;
 }) => {
   let contents = '';
@@ -48,7 +48,7 @@ export const writeGitattributes = ({
   }
 
   const addition = [
-    `${envFromFileFullpath} filter=${GIT_FILTER_NAME}`,
+    `${envFromFileRelativePath} filter=${GIT_FILTER_NAME}`,
     `${GITATTRIBUTES_COMMENT_PREFIX} script=${scriptsDir}`,
   ].join('\n');
 

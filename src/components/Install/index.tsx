@@ -143,7 +143,10 @@ const Install = ({
       case 'write-gitattributes':
         if (!envFromFileFullpath) throw new Error('no envFromFileFullpath');
 
-        writeGitattributes({ envFromFileFullpath, scriptsDir });
+        writeGitattributes({
+          envFromFileRelativePath: envModuleDir,
+          scriptsDir,
+        });
         markStepSucceeded(step);
         nextStep = 'git-filter-enable';
         break;
