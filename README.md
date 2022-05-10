@@ -1,4 +1,4 @@
-# dotenv-hot
+# dotenv-hot 🔥
 Dotenv that works with hot reloading.
 
 ## Setup
