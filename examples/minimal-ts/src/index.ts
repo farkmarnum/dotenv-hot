@@ -1,3 +1,3 @@
-// import { BOTTLES } from "./env";
+import { BOTTLES } from './env';
 
-// console.log(BOTTLES);
+console.log(BOTTLES);
