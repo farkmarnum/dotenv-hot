@@ -4,8 +4,16 @@
   "description": "This is a minimal example that uses TypeScript.",
   "scripts": {
     "install-dotenv-hot": " npx ../.. setup -y -e examples/minimal-js/src -s examples/minimal-js/scripts",
-    "watch-env": "npx ../.. watch"
+    "watch-env": "npx ../.. watch",
+    "start": "nodemon --exec babel-node src/index.js"
   },
-  "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@babel/cli": "^7.17.10"
+  },
+  "devDependencies": {
+    "@babel/node": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
+    "nodemon": "^2.0.16"
+  }
 }
