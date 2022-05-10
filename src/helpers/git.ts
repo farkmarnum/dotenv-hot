@@ -75,3 +75,7 @@ export const gitStageAll = () => {
 // Show git config:
 export const getGitConfig = () =>
   execSync('git config --list --local', { encoding: 'utf-8' });
+
+// Show git config:
+export const getGitRepoRootDir = () =>
+  execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim();
