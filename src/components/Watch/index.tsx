@@ -3,19 +3,15 @@ import fs from 'fs';
 import React, { useState, useEffect } from 'react';
 import { Box, Newline, Text } from 'ink';
 import Spinner from 'ink-spinner';
-import chalk from 'chalk';
 import stripComments from 'strip-comments';
 import {
   ENV_FILENAME,
   ENV_FROM_FILE_COMMENT,
   ENV_FROM_FILE_FILENAME,
-  GITATTRIBUTES_FILE,
   GIT_FILTER_SCRIPT_FILENAME,
   GIT_FILTER_NAME,
-  PACKAGE_NAME,
   ENV_MODULE_FILENAME,
   IS_TYPESCRIPT,
-  GITATTRIBUTES_COMMENT_PREFIX,
 } from '../../helpers/constants';
 import {
   getGitConfig,
@@ -23,14 +19,7 @@ import {
   gitStage,
   getGitRepoRootDir,
 } from '../../helpers/git';
-
-const showWarning = (msg: string) => {
-  console.error(
-    `${chalk.red('ERROR:')} ${chalk.yellow(
-      msg,
-    )} -- have you run ${chalk.cyanBright(`npx ${PACKAGE_NAME} setup`)} yet?`,
-  );
-};
+import { showWarning, getDataFromGitattributes } from '../../helpers/util';
 
 const ensureGitFilter = ({ scriptsDir }: { scriptsDir: string }) => {
   const gitConfigPattern = RegExp(
@@ -66,49 +55,6 @@ const ensureThatSetupHasHappened = ({
 
   // Ensure that git filter is enabled
   ensureGitFilter({ scriptsDir });
-};
-
-const getDataFromGitattributes = () => {
-  let gitattributes: string = '';
-
-  try {
-    gitattributes = fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8');
-  } catch (err) {
-    if ((err as Record<string, string>).code === 'ENOENT') {
-      showWarning(`Could not find ${GITATTRIBUTES_FILE}`);
-      process.exit(1);
-    }
-  }
-
-  const attributePattern = RegExp(
-    `^(?<envModuleDir>.*)${ENV_FROM_FILE_FILENAME} filter=(.*)`,
-    'm',
-  );
-  const commentPattern = RegExp(
-    `^${GITATTRIBUTES_COMMENT_PREFIX} script=(?<scriptsDir>.*)`,
-    'm',
-  );
-  const attributeMatch = gitattributes.match(attributePattern);
-  const commentMatch = gitattributes.match(commentPattern);
-
-  if (
-    !attributeMatch ||
-    !attributeMatch.groups ||
-    !attributeMatch.groups.envModuleDir ||
-    !commentMatch ||
-    !commentMatch.groups ||
-    !commentMatch.groups.scriptsDir
-  ) {
-    console.error(
-      `ERROR: could not the relevant data in ${GITATTRIBUTES_FILE}`,
-    );
-    process.exit();
-  }
-
-  const { envModuleDir } = attributeMatch.groups;
-  const { scriptsDir } = commentMatch.groups;
-
-  return { envModuleDir, scriptsDir };
 };
 
 const slashQuotes = (s: string) => s.replace(/'/g, "\\'");

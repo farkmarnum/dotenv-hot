@@ -1,8 +1,9 @@
 import path from 'path';
 import React, { useEffect } from 'react';
 import { Box, useApp } from 'ink';
-import Setup from './components/Setup';
+import Install from './components/Install';
 import Watch from './components/Watch';
+import Uninstall from './components/Uninstall';
 import { COMMANDS, PACKAGE_NAME } from './helpers/constants';
 import { getGitRepoRootDir } from './helpers/git';
 
@@ -49,8 +50,8 @@ const App: React.FC<{
 
   return (
     <Box>
-      {command === 'setup' && (
-        <Setup
+      {command === 'install' && (
+        <Install
           envModuleDir={envModuleDirRelative}
           scriptsDir={scriptsDirRelative}
           shouldSkipConfirmations={
@@ -59,6 +60,7 @@ const App: React.FC<{
         />
       )}
       {command === 'watch' && <Watch />}
+      {command === 'uninstall' && <Uninstall />}
     </Box>
   );
 };

@@ -1,5 +1,5 @@
 import packageInfo from '../../package.json';
-import { isTypescript } from './util';
+import { isTypescript } from './typescript';
 
 export const PACKAGE_NAME = packageInfo.name;
 
@@ -41,7 +41,7 @@ import envFromFile from "./${ENV_FROM_FILE_PREFIX}";
  */
 `;
 
-export const COMMANDS = ['setup', 'watch'] as const;
+export const COMMANDS = ['install', 'watch', 'uninstall'] as const;
 
 export const GIT_FILTER_NAME = 'dotenv-hot-env-module';
 

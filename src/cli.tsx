@@ -11,13 +11,14 @@ Usage
   $ ${PACKAGE_NAME} <command> [<flags>]
 
 Commands
-  setup                    Initial setup: create env.[js|ts], add gitattributes filter, etc.
-  watch                    Watch .env for changes and update env.[js|ts] accordingly.
+  install                 Initial setup: create env.[js|ts], add gitattributes filter, etc.
+  watch                   Watch .env for changes and update env.[js|ts] accordingly.
+  uninstall               Remove the added files & the git filter.
 
 Flags
-  -e, --env-module-dir     Target directory for env.[js|ts] file, from the root of the git repository. Defaults to 'src/'.
-  -s, --scripts-dir        Target directory for git script, from the root of the git repository. Defaults to 'scripts/'.
-  -y, --yes                Answer "yes" to all confirmation questions.
+  -e, --env-module-dir    Target directory for env.[js|ts] file, from the root of the git repository. Defaults to 'src/'.
+  -s, --scripts-dir       Target directory for git script, from the root of the git repository. Defaults to 'scripts/'.
+  -y, --yes               Answer "yes" to all confirmation questions.
 `,
   {
     flags: {

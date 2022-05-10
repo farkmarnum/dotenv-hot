@@ -15,7 +15,6 @@ import {
   createGitFilterScript,
   writeGitattributes,
   enableGitFilter,
-  gitStageAll,
 } from '../../helpers/git';
 import {
   GIT_FILTER_SCRIPT_FILENAME,
@@ -32,7 +31,6 @@ const steps = [
   'git-filter-script-create',
   'write-gitattributes',
   'git-filter-enable',
-  'git-stage-all',
 ] as const;
 
 type Step = typeof steps[number];
@@ -42,7 +40,7 @@ interface StepStatus {
   status: 'succeeded' | 'failed';
 }
 
-const Setup = ({
+const Install = ({
   envModuleDir,
   scriptsDir,
   shouldSkipConfirmations,
@@ -153,12 +151,6 @@ const Setup = ({
       case 'git-filter-enable':
         enableGitFilter(scriptsDir);
         markStepSucceeded(step);
-        nextStep = 'git-stage-all';
-        break;
-
-      case 'git-stage-all':
-        gitStageAll();
-        markStepSucceeded(step);
         break;
 
       default:
@@ -230,10 +222,6 @@ const Setup = ({
               {completedStep.step === 'git-filter-enable' && (
                 <Text>· {status} Enabling the new git filter</Text>
               )}
-
-              {completedStep.step === 'git-stage-all' && (
-                <Text>· {status} Staging all changed and added files</Text>
-              )}
             </Box>
           );
         }}
@@ -261,4 +249,4 @@ const Setup = ({
   );
 };
 
-export default Setup;
+export default Install;

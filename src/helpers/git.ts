@@ -72,15 +72,14 @@ export const gitStage = (filename: string) => {
   execSync(`git add ${filename}`);
 };
 
-// Stage all files:
-export const gitStageAll = () => {
-  execSync('git add .');
-};
-
-// Show git config:
+// Get git config:
 export const getGitConfig = () =>
   execSync('git config --list --local', { encoding: 'utf-8' });
 
-// Show git config:
+// Get git root dir:
 export const getGitRepoRootDir = () =>
   execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim();
+
+// Remove git filter:
+export const removeGitFilter = () =>
+  execSync(`git config --local --unset-all filter.${GIT_FILTER_NAME}.clean`);

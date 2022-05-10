@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "This is a minimal example that uses TypeScript.",
   "scripts": {
-    "install-dotenv-hot": " npx ../.. setup -y -e examples/minimal-js/src -s examples/minimal-js/scripts",
+    "install-dotenv-hot": " npx ../.. install -y -e examples/minimal-js/src -s examples/minimal-js/scripts",
+    "uninstall-dotenv-hot": " npx ../.. uninstall",
     "watch-env": "npx ../.. watch",
     "start": "nodemon --exec babel-node src/index.js"
   },

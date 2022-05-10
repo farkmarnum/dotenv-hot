@@ -5,7 +5,7 @@ Dotenv that works with hot reloading.
 ## Installation
 
 ```bash
-npx dotenv-hot setup -y -d src
+npx dotenv-hot setup
 ```
 *After running this, commit the staged changes.*
 
@@ -15,7 +15,23 @@ npx dotenv-hot setup -y -d src
 npx dotenv-hot watch
 ```
 
+Or, install with `yarn add -D dotenv-hot` and add to your `package.json`:
+```json
+{
+  "scripts": {
+    "watch-env": "dotenv-hot watch"
+  }
+}
+```
+
 You can also run `npx dotenv-hot --help` for a full usage message.
+
+## To remove
+
+To remove the added files and the git fiter, run:
+```bash
+npx dotenv-hot uninstall
+```
 
 ## How it works
 
