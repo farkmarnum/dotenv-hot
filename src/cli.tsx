@@ -15,14 +15,19 @@ Commands
   watch                    Watch .env for changes and update env.[js|ts] accordingly.
 
 Flags
-  -d, --env-module-dir     Target directory for env.[js|ts] file.
+  -e, --env-module-dir     Target directory for env.[js|ts] file, from the root of the git repository. Defaults to 'src/'.
+  -s, --scripts-dir        Target directory for git script, from the root of the git repository. Defaults to 'scripts/'.
   -y, --yes                Answer "yes" to all confirmation questions.
 `,
   {
     flags: {
       envModuleDir: {
         type: 'string',
-        alias: 'd',
+        alias: 'e',
+      },
+      scriptsDir: {
+        type: 'string',
+        alias: 's',
       },
       yes: {
         type: 'boolean',
@@ -35,7 +40,8 @@ Flags
 render(
   <App
     command={cli.input[0]}
-    envModuleDir={cli.flags.envModuleDir as string | undefined}
+    envModuleDir={cli.flags.envModuleDir}
+    scriptsDir={cli.flags.scriptsDir}
     shouldSkipConfirmations={cli.flags.yes}
   />,
 );

@@ -3,10 +3,11 @@ import { Box, Newline, Text } from 'ink';
 import SelectInput, { ItemProps } from 'ink-select-input';
 
 import {
-  GIT_FILTER_SCRIPT_FULLPATH,
+  GIT_FILTER_SCRIPT_FILENAME,
   ENV_FROM_FILE_FILENAME,
   ENV_MODULE_FILENAME,
   GITATTRIBUTES_FILE,
+  PACKAGE_NAME,
 } from '../../helpers/constants';
 
 const ItemComponent = ({ isSelected, label }: ItemProps) => (
@@ -17,8 +18,12 @@ const ItemComponent = ({ isSelected, label }: ItemProps) => (
 
 const InitialConfirmation = ({
   confirm,
+  scriptsDir,
+  envModuleDir,
 }: {
   confirm: (resp: boolean) => void;
+  scriptsDir: string;
+  envModuleDir: string;
 }) => {
   const items: { value: boolean; label: string }[] = [
     {
@@ -39,11 +44,17 @@ const InitialConfirmation = ({
         <Newline />
         This tool will generate the following files:
         <Newline />· A script for use by git:{' '}
-        <Text color="yellowBright">{GIT_FILTER_SCRIPT_FULLPATH}</Text>
+        <Text color="yellowBright">
+          {scriptsDir}/{GIT_FILTER_SCRIPT_FILENAME}
+        </Text>
         <Newline />· Two files,{' '}
-        <Text color="yellowBright">{ENV_FROM_FILE_FILENAME}</Text> and{' '}
-        <Text color="yellowBright">{ENV_MODULE_FILENAME}</Text>, in the
-        directory of your choosing
+        <Text color="yellowBright">
+          {envModuleDir}/{ENV_FROM_FILE_FILENAME}
+        </Text>{' '}
+        and{' '}
+        <Text color="yellowBright">
+          {envModuleDir}/{ENV_MODULE_FILENAME}
+        </Text>
         <Newline />
         <Newline />
         This tool will also modify the following files:
@@ -51,6 +62,10 @@ const InitialConfirmation = ({
         (should be checked in to git)
         <Newline />· <Text color="yellowBright">.git/config</Text> (is not
         checked in to git)
+        <Newline />
+        <Newline />
+        NOTE: if you would like to adjust the directories used for the above
+        files, run <Text color="cyanBright">npx {PACKAGE_NAME} --help</Text>
         <Newline />
         <Newline />
         Would you like to continue?

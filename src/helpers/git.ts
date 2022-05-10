@@ -3,8 +3,7 @@ import { execSync } from 'child_process';
 
 import {
   GITATTRIBUTES_FILE,
-  GIT_FILTER_SCRIPT_DIR,
-  GIT_FILTER_SCRIPT_FULLPATH,
+  GIT_FILTER_SCRIPT_FILENAME,
   GIT_FILTER_SCRIPT_CONTENTS,
   GIT_FILTER_NAME,
 } from './constants';
@@ -26,19 +25,27 @@ export const checkForCleanWorkingTree = (): string | undefined => {
   return undefined;
 };
 
-export const createGitFilterScript = () => {
-  fs.mkdirSync(GIT_FILTER_SCRIPT_DIR, { recursive: true });
-  fs.writeFileSync(GIT_FILTER_SCRIPT_FULLPATH, GIT_FILTER_SCRIPT_CONTENTS);
-  fs.chmodSync(GIT_FILTER_SCRIPT_FULLPATH, '755');
+export const createGitFilterScript = (scriptsDir: string) => {
+  const fullpath = `${scriptsDir}/${GIT_FILTER_SCRIPT_FILENAME}`;
+
+  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.writeFileSync(fullpath, GIT_FILTER_SCRIPT_CONTENTS);
+  fs.chmodSync(fullpath, '755');
 };
 
-export const writeGitattributes = (envFromFileFullpath: string) => {
+export const writeGitattributes = ({
+  envFromFileFullpath,
+  scriptsDir,
+}: {
+  envFromFileFullpath: string;
+  scriptsDir: string;
+}) => {
   let contents = '';
   if (fs.existsSync(GITATTRIBUTES_FILE)) {
     contents = `${fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8')}`;
   }
 
-  const addition = `${envFromFileFullpath} filter=${GIT_FILTER_NAME}`;
+  const addition = `${envFromFileFullpath} filter=${GIT_FILTER_NAME} # script=${scriptsDir}`;
 
   // If this line isn't in .gitattributes yet, add it:
   if (!contents.includes(addition)) {
@@ -47,9 +54,11 @@ export const writeGitattributes = (envFromFileFullpath: string) => {
 };
 
 // Add this filter to .git/config:
-export const enableGitFilter = () => {
+export const enableGitFilter = (scriptsDir: string) => {
+  const scriptFullpath = `${scriptsDir}/${GIT_FILTER_SCRIPT_FILENAME}`;
+
   execSync(
-    `git config --local filter.${GIT_FILTER_NAME}.clean ${GIT_FILTER_SCRIPT_FULLPATH}`,
+    `git config --local filter.${GIT_FILTER_NAME}.clean script=${scriptFullpath}`,
   );
 };
 

@@ -7,8 +7,9 @@ import { COMMANDS, PACKAGE_NAME } from './helpers/constants';
 const App: React.FC<{
   command?: string;
   envModuleDir?: string;
+  scriptsDir?: string;
   shouldSkipConfirmations?: boolean;
-}> = ({ command, envModuleDir, shouldSkipConfirmations }) => {
+}> = ({ command, envModuleDir, scriptsDir, shouldSkipConfirmations }) => {
   const { exit } = useApp();
 
   useEffect(() => {
@@ -27,8 +28,9 @@ const App: React.FC<{
     <Box>
       {command === 'setup' && (
         <Setup
-          envModuleDirFromFlag={envModuleDir}
-          shouldSkipConfirmations={shouldSkipConfirmations}
+          envModuleDir={envModuleDir || 'src'}
+          scriptsDir={scriptsDir || 'scripts'}
+          shouldSkipConfirmations={shouldSkipConfirmations || false}
         />
       )}
       {command === 'watch' && <Watch />}

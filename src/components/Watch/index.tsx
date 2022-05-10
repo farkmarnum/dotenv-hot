@@ -9,7 +9,7 @@ import {
   ENV_FROM_FILE_COMMENT,
   ENV_FROM_FILE_FILENAME,
   GITATTRIBUTES_FILE,
-  GIT_FILTER_SCRIPT_FULLPATH,
+  GIT_FILTER_SCRIPT_FILENAME,
   GIT_FILTER_NAME,
   PACKAGE_NAME,
   ENV_MODULE_FILENAME,
@@ -17,26 +17,17 @@ import {
 } from '../../helpers/constants';
 import { getGitConfig, enableGitFilter, gitStage } from '../../helpers/git';
 
-const ensureThatSetupHasHappened = () => {
-  [GITATTRIBUTES_FILE, GIT_FILTER_SCRIPT_FULLPATH, ENV_FILENAME].forEach(
-    (filename) => {
-      if (!fs.existsSync(filename)) {
-        console.error(
-          `ERROR: could not find ${chalk.yellow(
-            filename,
-          )} -- have you run ${chalk.cyanBright(
-            `npx ${PACKAGE_NAME} setup`,
-          )} yet?`,
-        );
-        process.exit(1);
-      }
-    },
+const showWarning = (msg: string) => {
+  console.error(
+    `${chalk.red('ERROR:')} ${chalk.yellow(
+      msg,
+    )} -- have you run ${chalk.cyanBright(`npx ${PACKAGE_NAME} setup`)} yet?`,
   );
 };
 
-const ensureGitFilter = () => {
+const ensureGitFilter = ({ scriptsDir }: { scriptsDir: string }) => {
   const gitConfigPattern = RegExp(
-    `filter.${GIT_FILTER_NAME}.clean=${GIT_FILTER_SCRIPT_FULLPATH}`,
+    `filter.${GIT_FILTER_NAME}.clean=.*${GIT_FILTER_SCRIPT_FILENAME}`,
     'm',
   );
   const gitConfig = getGitConfig();
@@ -44,28 +35,65 @@ const ensureGitFilter = () => {
   const gitFilterNotEnabled = !gitConfigPattern.test(gitConfig);
 
   if (gitFilterNotEnabled) {
-    enableGitFilter();
+    enableGitFilter(scriptsDir);
   }
 };
 
-const getEnvModuleDirFromGitattributes = () => {
-  const gitattributes = fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8');
+const ensureThatSetupHasHappened = ({
+  envModuleDir,
+  scriptsDir,
+}: {
+  envModuleDir: string;
+  scriptsDir: string;
+}) => {
+  // Ensure that necessary files are present:
+  [
+    `${envModuleDir}/${ENV_FILENAME}`,
+    `${scriptsDir}/${GIT_FILTER_SCRIPT_FILENAME}`,
+  ].forEach((filename) => {
+    if (!fs.existsSync(filename)) {
+      showWarning(`Could not find ${filename}`);
+      process.exit(1);
+    }
+  });
+
+  // Ensure that git filter is enabled
+  ensureGitFilter({ scriptsDir });
+};
+
+const getDataFromGitattributes = () => {
+  let gitattributes: string = '';
+
+  try {
+    gitattributes = fs.readFileSync(GITATTRIBUTES_FILE, 'utf-8');
+  } catch (err) {
+    if ((err as Record<string, string>).code === 'ENOENT') {
+      showWarning(`Could not find ${GITATTRIBUTES_FILE}`);
+      process.exit(1);
+    }
+  }
+
   const pattern = RegExp(
-    `^(?<envModulePath>.*)${ENV_FROM_FILE_FILENAME} filter=`,
+    `^(?<envModuleDir>.*)${ENV_FROM_FILE_FILENAME} filter=(.*)# script=(?<scriptsDir>.*)`,
     'm',
   );
   const match = gitattributes.match(pattern);
 
-  if (!match || !match.groups || !match.groups.envModulePath) {
+  if (
+    !match ||
+    !match.groups ||
+    !match.groups.envModuleDir ||
+    !match.groups.scriptsDir
+  ) {
     console.error(
-      `ERROR: could not find env.ts or env.js referenced in ${GITATTRIBUTES_FILE}`,
+      `ERROR: could not the relevant data in ${GITATTRIBUTES_FILE}`,
     );
     process.exit();
   }
 
-  const { envModulePath } = match.groups;
+  const { envModuleDir, scriptsDir } = match.groups;
 
-  return envModulePath;
+  return { envModuleDir, scriptsDir };
 };
 
 const slashQuotes = (s: string) => s.replace(/'/g, "\\'");
@@ -156,10 +184,10 @@ const Watch = () => {
   const [warnings, setWarnings] = useState<React.ReactNode[]>([]);
 
   useEffect(() => {
-    ensureThatSetupHasHappened();
-    ensureGitFilter();
+    const { envModuleDir, scriptsDir } = getDataFromGitattributes();
 
-    const envModuleDir = getEnvModuleDirFromGitattributes();
+    ensureThatSetupHasHappened({ envModuleDir, scriptsDir });
+
     const updateEnvModule = updateEnvModuleFactory({
       envModuleDir,
       setWarnings,

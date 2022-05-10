@@ -45,9 +45,7 @@ export const COMMANDS = ['setup', 'watch'] as const;
 
 export const GIT_FILTER_NAME = 'dotenv-hot-env-module';
 
-const GIT_FILTER_SCRIPT_FILENAME = `git-filter-${GIT_FILTER_NAME}.sh`;
-export const GIT_FILTER_SCRIPT_DIR = 'scripts';
-export const GIT_FILTER_SCRIPT_FULLPATH = `${GIT_FILTER_SCRIPT_DIR}/${GIT_FILTER_SCRIPT_FILENAME}`;
+export const GIT_FILTER_SCRIPT_FILENAME = `git-filter-${GIT_FILTER_NAME}.sh`;
 
 export const GIT_FILTER_SCRIPT_CONTENTS = `echo "${ENV_FROM_FILE_TEMPLATE}"`;
 
