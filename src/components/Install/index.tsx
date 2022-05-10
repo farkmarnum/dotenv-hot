@@ -70,6 +70,8 @@ const Install = ({
     ? path.resolve(envModuleDir, ENV_FROM_FILE_FILENAME)
     : undefined;
 
+  const envFromFileRelativePath = `${envModuleDir}/${ENV_FROM_FILE_FILENAME}`;
+
   const envModuleFullpath = envModuleDir
     ? path.resolve(envModuleDir, ENV_MODULE_FILENAME)
     : undefined;
@@ -144,7 +146,7 @@ const Install = ({
         if (!envFromFileFullpath) throw new Error('no envFromFileFullpath');
 
         writeGitattributes({
-          envFromFileRelativePath: envModuleDir,
+          envFromFileRelativePath,
           scriptsDir,
         });
         markStepSucceeded(step);
