@@ -11,7 +11,7 @@ Usage
   $ ${PACKAGE_NAME} <command> [<flags>]
 
 Commands
-  install                 Initial setup: create env.[js|ts], add gitattributes filter, etc.
+  install                 Create files, add git filter.
   watch                   Watch .env for changes and update env.[js|ts] accordingly.
   uninstall               Remove the added files & the git filter.
 

@@ -11,7 +11,7 @@ export const showWarning = (msg: string) => {
   console.error(
     `${chalk.red('ERROR:')} ${chalk.yellow(
       msg,
-    )} -- have you run ${chalk.cyanBright(`npx ${PACKAGE_NAME} setup`)} yet?`,
+    )} -- have you run ${chalk.cyanBright(`npx ${PACKAGE_NAME} install`)} yet?`,
   );
 };
 

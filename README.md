@@ -5,7 +5,7 @@ Dotenv that works with hot reloading.
 ## Installation
 
 ```bash
-npx dotenv-hot setup
+npx dotenv-hot install
 ```
 *After running this, commit the staged changes.*
 
