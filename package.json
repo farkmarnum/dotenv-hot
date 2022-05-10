@@ -16,20 +16,20 @@
     "hot-reloading",
     "hmr"
   ],
-  "bin": "dist/source/cli.js",
+  "bin": "dist/cli.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/farkmarnum/dotenv-hot"
   },
   "scripts": {
-    "build": "tsc",
+    "typecheck": "tsc",
+    "build": "babel src --out-dir dist --extensions \".ts,.tsx\"",
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "prepublishOnly": "yarn clean && yarn lint && yarn test && yarn build",
-    "start": "npm run build && dist/source/cli.js",
+    "start": "npm run build && dist/cli.js",
     "pretest": "npm run build",
-    "test": "ava",
-    "x": "dist/source/cli.js"
+    "test": "ava"
   },
   "ava": {
     "typescript": {
@@ -37,7 +37,7 @@
         "tsx"
       ],
       "rewritePaths": {
-        "source/": "dist/source/"
+        "src/": "dist/"
       },
       "compile": false
     }
@@ -54,6 +54,11 @@
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
+    "@babel/cli": "^7.17.10",
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
+    "@babel/preset-react": "^7.16.7",
+    "@babel/preset-typescript": "^7.16.7",
     "@sindresorhus/tsconfig": "^2.0.0",
     "@types/node": "^17.0.31",
     "@types/react": "^18.0.9",

@@ -1,12 +1,18 @@
 {
   "extends": "@sindresorhus/tsconfig",
   "compilerOptions": {
+    "target": "esnext",
     "module": "commonjs",
+    // React:
     "jsx": "react",
+    // Basics:
     "esModuleInterop": true,
-    "outDir": "dist",
     "resolveJsonModule": true,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+    // For Babel:
+    "isolatedModules": true,
+    "declaration": true,
+    "noEmit": true
   },
-  "include": ["source"]
+  "include": ["src"]
 }
