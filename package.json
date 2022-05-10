@@ -27,7 +27,7 @@
     "build": "yarn run_build && chmod u+x dist/cli.js",
     "build:watch": "yarn run_build --watch && chmod u+x dist/cli.js",
     "clean": "rm -rf dist",
-    "lint": "eslint .",
+    "lint": "eslint --ignore-pattern 'examples/**/*' .",
     "prepublishOnly": "yarn clean && yarn lint && yarn test && yarn build",
     "start": "npm run build && dist/cli.js",
     "pretest": "npm run build",

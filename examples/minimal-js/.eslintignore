@@ -1,3 +1,5 @@
+# Don't bother linting this example
+
 *.js
 **/*.js
 dist/**

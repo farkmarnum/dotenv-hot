@@ -8,7 +8,7 @@
     "watch-env": "npx ../.. watch",
     "start": "nodemon src/index.ts",
     "build": "tsc",
-    "lint": "eslint"
+    "lint": "eslint ."
   },
   "license": "MIT",
   "devDependencies": {
