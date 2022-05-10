@@ -23,7 +23,7 @@
   },
   "scripts": {
     "typecheck": "tsc",
-    "build": "babel src --out-dir dist --extensions \".ts,.tsx\"",
+    "build": "babel src --out-dir dist --extensions \".ts,.tsx\" && chmod u+x dist/cli.js",
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "prepublishOnly": "yarn clean && yarn lint && yarn test && yarn build",
