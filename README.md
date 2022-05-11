@@ -56,4 +56,4 @@ npx dotenv-hot uninstall
 
 ### When in prod
 
-By default, any `.env` files will be ignored by this package in `prod`, since the `dotenv-hot watch` process will not be running. However, if you need to load values from a `.env` file in prod (no hot realoding here though), you can add `dotenv` and uncomment the relevant lines in `env.[ts|js]`.
+By default, any `.env` files will be ignored by this package in `prod`, since the `dotenv-hot watch` process will not be running. However, if you need to load values from a `.env` file in prod (no hot reloading here though), you can add `dotenv` and uncomment the relevant lines in `env.[ts|js]`.
